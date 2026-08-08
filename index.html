@@ -45,14 +45,14 @@
   /* ===== NAV (Zami Mart style) ===== */
   header{
     position:fixed;top:0;left:0;right:0;z-index:999;
-    padding:20px 0;
+    padding:12px 0;
     background:rgba(238,240,238,.82);
     backdrop-filter:blur(14px);
     border-bottom:1px solid var(--line);
     transition:padding .3s cubic-bezier(.22,1,.36,1), background .3s;
   }
   header.scrolled{
-    padding:10px 0;
+    padding:8px 0;
     background:rgba(238,240,238,.97);
     box-shadow:0 6px 24px -12px rgba(20,22,20,.25);
   }
@@ -61,10 +61,10 @@
   }
   .brand{display:flex;align-items:center;gap:12px;}
   .brand img{
-    height:152px;width:auto;object-fit:contain;flex-shrink:0;
+    height:96px;width:auto;object-fit:contain;flex-shrink:0;
     transition:height .3s cubic-bezier(.22,1,.36,1), transform .4s cubic-bezier(.22,1,.36,1);
   }
-  header.scrolled .brand img{height:88px;}
+  header.scrolled .brand img{height:64px;}
   .brand-text{display:flex;flex-direction:column;line-height:1;}
   .brand-text .name{font-family:'Space Grotesk';font-weight:700;font-size:16.5px;letter-spacing:0.01em;}
   .brand-text .sub{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:0.14em;color:var(--grey);text-transform:uppercase;margin-top:2px;}
@@ -468,8 +468,8 @@
   /* ===== HERO — now just the banner carousel (same style on mobile and desktop) ===== */
   .hero{
     position:relative;
-    padding:120px 0 0;
-    margin-top:80px;
+    padding:100px 0 0;
+    margin-top:28px;
   }
   .btn{
     padding:14px 26px;border-radius:2px;font-size:14px;font-weight:600;
@@ -522,137 +522,48 @@
   .mbanner-dots span.active{background:#fff;transform:scale(1.3);}
   .mbanner{display:none;}
 
-  /* ===== BANNER CAROUSEL — 3 slides visible with a smooth 3D coverflow slide (mobile + desktop) ===== */
+  /* ===== BANNER CAROUSEL — flat, equal-size, 3 slides visible at once
+     (same look/format on mobile + desktop, like a standard shop banner row) ===== */
   .mbanner3d{
-    display:block;position:relative;margin:0 0 40px;padding:0 62px;
+    display:flex;align-items:center;gap:10px;
+    position:relative;margin:0 0 24px;
   }
   .mbanner3d-viewport{
-    position:relative;width:100%;aspect-ratio:2.6/1;perspective:1500px;
+    flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    -ms-overflow-style:none;scrollbar-width:none;
   }
+  .mbanner3d-viewport::-webkit-scrollbar{display:none;}
+  .mbanner3d-track{display:flex;gap:14px;}
   .mbanner3d-slide{
-    position:absolute;top:0;height:100%;
-    border-radius:18px;overflow:hidden;cursor:pointer;
-    box-shadow:0 20px 45px -18px rgba(20,22,20,.35);
-    transition:left .65s cubic-bezier(.22,1,.36,1), width .65s cubic-bezier(.22,1,.36,1),
-               transform .65s cubic-bezier(.22,1,.36,1), opacity .65s ease, filter .65s ease;
+    flex:0 0 calc((100% - 28px)/3);
+    scroll-snap-align:start;
+    aspect-ratio:16/9;
+    border-radius:14px;overflow:hidden;cursor:pointer;
+    border:1px solid var(--line);
+    transition:transform .15s;
   }
+  .mbanner3d-slide:hover{transform:translateY(-2px);}
   .mbanner3d-slide img{width:100%;height:100%;object-fit:cover;display:block;}
-  .mbanner3d-slide.m3d-c{left:50%;width:46%;transform:translateX(-50%) rotateY(0) scale(1);opacity:1;z-index:3;filter:none;}
-  .mbanner3d-slide.m3d-l1{left:24%;width:27%;transform:translateX(-50%) rotateY(26deg) scale(.92);opacity:.72;z-index:2;filter:brightness(.82) saturate(.9);}
-  .mbanner3d-slide.m3d-r1{left:76%;width:27%;transform:translateX(-50%) rotateY(-26deg) scale(.92);opacity:.72;z-index:2;filter:brightness(.82) saturate(.9);}
-  .mbanner3d-slide.m3d-l2{left:8%;width:20%;transform:translateX(-50%) rotateY(35deg) scale(.78);opacity:0;z-index:0;filter:brightness(.7);pointer-events:none;}
-  .mbanner3d-slide.m3d-r2{left:92%;width:20%;transform:translateX(-50%) rotateY(-35deg) scale(.78);opacity:0;z-index:0;filter:brightness(.7);pointer-events:none;}
-  .mbanner3d-slide.m3d-c:hover{filter:brightness(1.03);}
   .mbanner3d-arrow{
-    position:absolute;top:50%;transform:translateY(-50%);
-    width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+    flex:0 0 auto;position:static;transform:none;
+    width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
     background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;
-    cursor:pointer;box-shadow:0 8px 20px -8px rgba(20,22,20,.25);z-index:5;
+    cursor:pointer;box-shadow:0 4px 12px -6px rgba(20,22,20,.25);
     transition:border-color .2s,color .2s,transform .15s;
   }
   .mbanner3d-arrow:hover{border-color:var(--green-deep);color:var(--green-deep);}
-  .mbanner3d-arrow:active{transform:translateY(-50%) scale(.92);}
-  .mbanner3d-arrow svg{width:16px;height:16px;}
-  .mbanner3d-arrow.prev{left:0;}
-  .mbanner3d-arrow.next{right:0;}
+  .mbanner3d-arrow:active{transform:scale(.92);}
+  .mbanner3d-arrow svg{width:15px;height:15px;}
 
-  /* ===== TICKER ===== */
-  .ticker{
-    position:relative;z-index:1;
-    display:flex;align-items:stretch;
-    border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
-    background:var(--ink);color:var(--paper);
-    margin-top:80px;
-  }
-  .ticker-live{
-    flex-shrink:0;display:flex;align-items:center;gap:9px;
-    padding:0 22px;border-right:1px solid #3a3c44;
-    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.16em;color:#f2f3f0;
-  }
-  .ticker-live .dot{
-    width:6px;height:6px;border-radius:50%;background:#7fbf9a;
-    animation:pulseDot 1.7s ease-in-out infinite;
-  }
   @keyframes pulseDot{
     0%,100%{opacity:1;transform:scale(1);}
     50%{opacity:.35;transform:scale(.65);}
   }
-  .ticker-scroll{
-    flex:1;overflow:hidden;white-space:nowrap;
-    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
-    mask-image:linear-gradient(to right, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
-  }
-  .ticker-track{
-    display:inline-flex;gap:0;padding:0;
-    animation:scrollTicker 34s linear infinite;
-    font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.03em;
-  }
-  .ticker-item{
-    display:inline-flex;align-items:center;gap:9px;
-    padding:13px 26px;color:#c8cbc6;border-right:1px solid #34363d;
-  }
-  .ticker-item .ti-icon{
-    width:15px;height:15px;flex-shrink:0;color:#8f9891;
-  }
-  .ticker-item .ti-icon svg{width:100%;height:100%;display:block;}
-  .ticker-item b{color:#fff;font-weight:500;}
-  .ticker-item .ti-badge{
-    background:var(--green);color:#fff;font-size:9px;font-weight:600;letter-spacing:.08em;
-    padding:3px 7px;border-radius:2px;flex-shrink:0;
-  }
-  .ticker-item .ti-sub{color:#7d8079;}
-  @keyframes scrollTicker{
-    0%{transform:translateX(0);}
-    100%{transform:translateX(-50%);}
-  }
-  .ticker-viber{
-    position:relative;overflow:hidden;
-    flex-shrink:0;display:flex;align-items:center;gap:9px;
-    padding:0 22px;border-left:1px solid #3a3c44;
-    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.06em;font-weight:500;
-    color:#fff;background:#7b5fd9;
-    transition:background .15s, transform .15s;
-    animation:viberGlow 2.6s ease-in-out infinite;
-  }
-  .ticker-viber:hover{background:#6a4fc4;transform:scale(1.03);}
-  .ticker-viber::before{
-    content:'';position:absolute;top:0;left:-45%;width:35%;height:100%;
-    background:linear-gradient(115deg, transparent, rgba(255,255,255,.45), transparent);
-    transform:skewX(-20deg);
-    animation:viberShine 3.6s ease-in-out infinite;
-  }
-  @keyframes viberShine{
-    0%{left:-45%;}
-    35%{left:130%;}
-    100%{left:130%;}
-  }
-  @keyframes viberGlow{
-    0%,100%{box-shadow:0 0 0 0 rgba(123,95,217,.55);}
-    50%{box-shadow:0 0 0 6px rgba(123,95,217,0);}
-  }
-  .tv-icon-wrap{position:relative;display:inline-flex;flex-shrink:0;}
-  .ticker-viber svg{
-    width:24px;height:24px;flex-shrink:0;position:relative;z-index:1;
-    animation:viberIconTilt 1.9s ease-in-out infinite;
-    filter:drop-shadow(0 1px 2px rgba(0,0,0,.18));
-  }
-  .ticker-viber img{
-    width:34px;height:34px;flex-shrink:0;position:relative;z-index:1;
-    animation:viberIconTilt 1.9s ease-in-out infinite;
-    filter:drop-shadow(0 1px 2px rgba(0,0,0,.18));
-  }
-  @keyframes viberIconTilt{
-    0%,100%{transform:rotate(0deg) translateY(0);}
-    50%{transform:rotate(-10deg) translateY(-1px);}
-  }
-  .viber-dot{
-    position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;
-    background:#ff5c5c;border:1.5px solid #7b5fd9;z-index:2;
-    animation:pulseDot 1.5s ease-in-out infinite;
-  }
 
   /* ===== SECTION HEADERS ===== */
   .section{padding:88px 0;}
+  #products{padding-top:24px;}
   .section-head{
     display:flex;justify-content:space-between;align-items:flex-end;
     margin-bottom:44px;gap:24px;flex-wrap:wrap;
@@ -1020,22 +931,14 @@
     .brand img{height:64px;}
     header.scrolled .brand img{height:48px;}
     .hero{padding-top:80px;margin-top:60px;}
-    .mbanner3d{margin-bottom:18px;padding:0 34px;}
-    .mbanner3d-viewport{aspect-ratio:1.9/1;perspective:900px;}
-    .mbanner3d-slide{border-radius:14px;}
-    .mbanner3d-slide.m3d-c{width:64%;}
-    .mbanner3d-slide.m3d-l1{left:14%;width:26%;transform:translateX(-50%) rotateY(20deg) scale(.9);}
-    .mbanner3d-slide.m3d-r1{left:86%;width:26%;transform:translateX(-50%) rotateY(-20deg) scale(.9);}
-    .mbanner3d-slide.m3d-l2{left:0%;width:16%;transform:translateX(-50%) rotateY(28deg) scale(.78);}
-    .mbanner3d-slide.m3d-r2{left:100%;width:16%;transform:translateX(-50%) rotateY(-28deg) scale(.78);}
-    .mbanner3d-arrow{width:30px;height:30px;}
-    .mbanner3d-arrow svg{width:14px;height:14px;}
+    .mbanner3d{margin-bottom:18px;gap:6px;}
+    .mbanner3d-track{gap:8px;}
+    .mbanner3d-slide{flex-basis:calc((100% - 16px)/3);border-radius:10px;aspect-ratio:16/9;}
+    .mbanner3d-arrow{width:28px;height:28px;}
+    .mbanner3d-arrow svg{width:13px;height:13px;}
     .why .wrap{padding:56px 18px;}
     .why-grid{grid-template-columns:1fr;gap:24px;}
     .band{padding:60px 0;}
-    .ticker-viber .tv-text{display:none;}
-    .ticker-viber{padding:0 14px;}
-    .ticker-live{padding:0 14px;font-size:10px;}
   }
   @media(max-width:400px){
     .brand img{height:52px;}
@@ -1848,29 +1751,12 @@
     </div>
   </div>
 
-  <div class="ticker">
-    <div class="ticker-live"><span class="dot"></span>NEW ARRIVALS</div>
-    <div class="ticker-scroll">
-      <div class="ticker-track" id="tickerTrack"></div>
-    </div>
-    <!-- Replace href below with your actual Viber community invite link -->
-    <a href="https://invite.viber.com/?g2=AQB5Hzm0PAPYD1EIyK%2FJAWZPsy%2FNf30Uav2evOpddFJopdHli%2Bg%2B9jayAxi2gWsD" target="_blank" rel="noopener" class="ticker-viber">
-      <span class="tv-icon-wrap">
-        <img src="img/viber.png" alt="Viber">
-        <span class="viber-dot"></span>
-      </span>
-      <span class="tv-text">Join our Viber Community</span>
-    </a>
-  </div>
 </section>
 
 <section class="section" id="products">
   <div class="wrap">
     <div class="section-head reveal-up">
-      <div>
-        <span class="section-tag">Catalogue</span>
-        <h2>Ready to stock</h2>
-      </div>
+      <div></div>
       <button class="cat-trigger" id="catTrigger">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
         Categories
@@ -2228,7 +2114,10 @@
    and set "img" to its filename, e.g. "assets/products/cola-24pk.jpg"
    If "img" is left as "" the card auto-shows a placeholder tile.
 ========================================================= */
-const PRODUCTS = [
+/* Fallback/starter catalogue — used only if the live Firestore
+   "products" collection (managed from admin.html) is empty. Once you
+   add real products from the admin panel, those take over automatically. */
+const PRODUCTS_SEED = [
   { name:"Sparkling Cola 24-Pack", sku:"BEV-1024", cat:"Beverages", price:"MVR 210", unit:"/ carton", stock:"in", img:"" },
   { name:"Bottled Water 500ml (Case)", sku:"BEV-1032", cat:"Beverages", price:"MVR 95", unit:"/ carton", stock:"in", img:"" },
   { name:"Instant Coffee 200g Tin", sku:"BEV-1041", cat:"Beverages", price:"MVR 340", unit:"/ case", stock:"low", img:"" },
@@ -2244,6 +2133,11 @@ const PRODUCTS = [
   { name:"UHT Milk 1L (Case of 12)", sku:"FRZ-5022", cat:"Frozen & Dairy", price:"MVR 250", unit:"/ case", stock:"low", img:"" },
   { name:"Butter Blocks 500g (Case)", sku:"FRZ-5031", cat:"Frozen & Dairy", price:"MVR 300", unit:"/ case", stock:"in", img:"" },
 ];
+
+/* Live product list — starts as the seed catalogue, gets replaced by
+   real Firestore data (see syncProductsFromFirestore near the bottom
+   of this script) as soon as it loads. */
+let PRODUCTS = PRODUCTS_SEED;
 
 const grid = document.getElementById('productGrid');
 const placeholderIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2 21 7v10l-9 5-9-5V7l9-5Z"/><path d="M12 12 21 7"/><path d="M12 12v9"/><path d="M12 12 3 7"/></svg>`;
@@ -2480,8 +2374,8 @@ document.querySelectorAll('.cat-side-item').forEach(item => {
    e.g. "assets/categories/beverages.jpg". Leave "" for placeholder.
 ========================================================= */
 const CATEGORY_VISUALS = [
-  { name:"Beverages", img:"img/homepage/1beverage.webp" },
-  { name:"Snacks", img:"img/homepage/1snacks.jpg" },
+  { name:"Beverages", img:"img/homepage/mrbrown.jpeg" },
+  { name:"Snacks", img:"img/homepage/starjus.jpeg" },
   { name:"Household", img:"img/homepage/1household.jpg" },
   { name:"Personal Care", img:"img/homepage/1personalcare.jpg" },
   { name:"Frozen & Dairy", img:"img/homepage/1frozen&dairy.webp" },
@@ -2521,10 +2415,9 @@ function restartMBannerTimer(){
 document.getElementById('mBannerPrev').addEventListener('click', () => { goToBannerSlide(mBannerIndex - 1); restartMBannerTimer(); });
 document.getElementById('mBannerNext').addEventListener('click', () => { goToBannerSlide(mBannerIndex + 1); restartMBannerTimer(); });
 
-/* ===== DESKTOP BANNER — 3 slides visible at once, smooth 3D coverflow slide ===== */
+/* ===== BANNER ROW — flat, equal-size slides, 3 visible at once (BHM-style) ===== */
+const mBanner3dViewport = document.querySelector('.mbanner3d-viewport');
 const mBanner3dTrack = document.getElementById('mBanner3dTrack');
-const M3D_POS_CLASSES = ['m3d-l2','m3d-l1','m3d-c','m3d-r1','m3d-r2'];
-let m3dIndex = 0;
 
 function buildMBanner3dSlides(){
   mBanner3dTrack.innerHTML = CATEGORY_VISUALS.map((c, i) => `
@@ -2537,39 +2430,27 @@ function buildMBanner3dSlides(){
   `).join('');
   mBanner3dTrack.querySelectorAll('.mbanner3d-slide').forEach(el => {
     el.addEventListener('click', () => {
-      const n = CATEGORY_VISUALS.length;
-      const idx = parseInt(el.dataset.idx, 10);
-      let diff = (idx - m3dIndex) % n;
-      if(diff > n / 2) diff -= n;
-      if(diff < -n / 2) diff += n;
-      if(diff === 0){
-        selectCategory(el.dataset.name);
-        document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
-      } else {
-        goM3d(diff > 0 ? 1 : -1);
-        restartM3dTimer();
-      }
+      selectCategory(el.dataset.name);
+      document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
     });
   });
 }
-function updateMBanner3dPositions(){
-  const n = CATEGORY_VISUALS.length;
-  mBanner3dTrack.querySelectorAll('.mbanner3d-slide').forEach(el => {
-    const idx = parseInt(el.dataset.idx, 10);
-    let diff = (idx - m3dIndex) % n;
-    if(diff > n / 2) diff -= n;
-    if(diff < -n / 2) diff += n;
-    diff = Math.max(-2, Math.min(2, diff));
-    el.classList.remove(...M3D_POS_CLASSES);
-    el.classList.add(M3D_POS_CLASSES[diff + 2]);
-  });
+buildMBanner3dSlides();
+
+// how far one "step" is: one slide's width + the track gap
+function m3dStep(){
+  const slide = mBanner3dTrack.querySelector('.mbanner3d-slide');
+  if(!slide) return 0;
+  const gap = parseFloat(getComputedStyle(mBanner3dTrack).gap) || 0;
+  return slide.getBoundingClientRect().width + gap;
 }
 function goM3d(step){
-  m3dIndex = (m3dIndex + step + CATEGORY_VISUALS.length) % CATEGORY_VISUALS.length;
-  updateMBanner3dPositions();
+  const max = mBanner3dTrack.scrollWidth - mBanner3dViewport.clientWidth;
+  let target = mBanner3dViewport.scrollLeft + step * m3dStep();
+  if(target < 0) target = max;               // wrap to the end
+  else if(target > max + 4) target = 0;       // wrap to the start
+  mBanner3dViewport.scrollTo({ left: target, behavior: 'smooth' });
 }
-buildMBanner3dSlides();
-updateMBanner3dPositions();
 let m3dTimer = setInterval(() => goM3d(1), 3800);
 function restartM3dTimer(){
   clearInterval(m3dTimer);
@@ -2577,36 +2458,7 @@ function restartM3dTimer(){
 }
 document.getElementById('mBanner3dPrev').addEventListener('click', () => { goM3d(-1); restartM3dTimer(); });
 document.getElementById('mBanner3dNext').addEventListener('click', () => { goM3d(1); restartM3dTimer(); });
-
-/* Ticker strip — New Arrivals, pulled straight from the product catalogue above */
-const TICKER_ICONS = {
-  BEVERAGES:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2h5M10 2v4.5l-3.3 5.2A3 3 0 0 0 6 13.3V20a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6.7a3 3 0 0 0-.7-1.9L14 6.5V2"/><path d="M7 15h10"/></svg>`,
-  SNACKS:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8 8 3h8l1.5 5"/><path d="M4.5 8h15L18 20.2a2 2 0 0 1-2 1.8H8a2 2 0 0 1-2-1.8L4.5 8Z"/><path d="M9.5 12v4M14.5 12v4"/></svg>`,
-  HOUSEHOLD:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 3.5 20.5 11"/><path d="M5.5 9.8V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.8"/><path d="M9.5 21v-6h5v6"/></svg>`,
-  "PERSONAL CARE":`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c-2.8 3.9-6 8.6-6 12a6 6 0 0 0 12 0c0-3.4-3.2-8.1-6-12Z"/></svg>`,
-  "FROZEN & DAIRY":`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.9 6.5l14.2 11M19.1 6.5 4.9 17.5"/><path d="M12 2 9.7 4.3M12 2l2.3 2.3M12 22l-2.3-2.3M12 22l2.3-2.3M4.9 6.5l3.1.4M4.9 6.5l.6-3.1M19.1 6.5l-3.1.4M19.1 6.5l-.6-3.1M4.9 17.5l3.1-.4M4.9 17.5l.6 3.1M19.1 17.5l-3.1-.4M19.1 17.5l-.6 3.1"/></svg>`,
-};
-/* Pulls the newest items straight from PRODUCTS (defined above) so you only
-   maintain one list. To feature specific items instead, replace this line
-   with your own array of {name, sku, cat}. */
-const NEW_ARRIVALS = PRODUCTS.slice(0, 7);
-const track = document.getElementById('tickerTrack');
-function buildTicker(){
-  let html = "";
-  for(let r=0;r<2;r++){
-    NEW_ARRIVALS.forEach(p=>{
-      const icon = TICKER_ICONS[p.cat.toUpperCase()] || '';
-      html += `<span class="ticker-item">
-        <span class="ti-icon">${icon}</span>
-        <span class="ti-badge">NEW</span>
-        <b>${p.name}</b>
-        <span class="ti-sub">${p.cat}</span>
-      </span>`;
-    });
-  }
-  track.innerHTML = html;
-}
-buildTicker();
+mBanner3dViewport.addEventListener('pointerdown', restartM3dTimer);
 
 /* ===== PRODUCT VIEW MODAL ===== */
 const pmOverlay = document.getElementById('pmOverlay');
@@ -3472,6 +3324,59 @@ document.querySelectorAll('.mbn-item').forEach(btn => {
     }
   });
 });
+
+/* =========================================================
+   LIVE INVENTORY SYNC — pulls products from Firestore (managed
+   in admin.html) and keeps the storefront catalogue up to date
+   in real time. Falls back to PRODUCTS_SEED above if the
+   "products" collection is empty (e.g. brand new site, admin
+   hasn't added real inventory yet).
+========================================================= */
+function mapFirestoreProduct(doc){
+  const d = doc.data();
+  const qty = typeof d.qty === 'number' ? d.qty : 0;
+  const threshold = typeof d.lowStockThreshold === 'number' ? d.lowStockThreshold : 10;
+  const stock = qty <= 0 ? 'out' : (qty <= threshold ? 'low' : 'in');
+  const priceNum = typeof d.price === 'number' ? d.price : parseFloat(d.price) || 0;
+  return {
+    id: doc.id,
+    name: d.name || 'Unnamed product',
+    sku: d.sku || doc.id,
+    cat: d.cat || 'Household',
+    price: `MVR ${priceNum.toLocaleString('en-US')}`,
+    unit: d.unit || '/ unit',
+    stock,
+    qty,
+    img: d.img || ''
+  };
+}
+
+function refreshCatalogueUI(){
+  renderProducts();
+}
+
+(function syncProductsFromFirestore(){
+  if(typeof db === 'undefined') return;
+  try{
+    db.collection('products').orderBy('createdAt', 'desc').onSnapshot(
+      snap => {
+        if(snap.empty){
+          PRODUCTS = PRODUCTS_SEED;
+        } else {
+          PRODUCTS = snap.docs.map(mapFirestoreProduct);
+        }
+        refreshCatalogueUI();
+      },
+      err => {
+        console.warn('Live catalogue unavailable, showing starter catalogue:', err.message);
+        PRODUCTS = PRODUCTS_SEED;
+        refreshCatalogueUI();
+      }
+    );
+  } catch(err){
+    console.warn('Could not connect to live catalogue:', err);
+  }
+})();
 </script>
 
 

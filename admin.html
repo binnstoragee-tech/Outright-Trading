@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Outright Trading</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="shortcut icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#25262b;
+    --paper:#eef0ee;
+    --paper-raised:#f8f9f7;
+    --grey:#6e6e76;
+    --grey-light:#9a9aa1;
+    --line:#d5d7d3;
+    --green:#3f6b52;
+    --green-deep:#2c4d3b;
+    --green-soft:#e7efe9;
+    --rust:#a8432f;
+    --rust-soft:#f8e9e5;
+    --amber:#b8842b;
+    --amber-soft:#f9efdd;
+    --card-bg:#ffffff;
+    --sidebar-w:264px;
+    --sidebar-w-collapsed:84px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  html,body{width:100%;overflow-x:hidden;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.01em;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  button,input,select,textarea{font-family:inherit;}
+  button{cursor:pointer;}
+  ::selection{background:rgba(63,107,82,.22);}
+
+  /* ===== scrollbar (webkit) ===== */
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--grey-light);}
+
+  /* ===== shared bits ===== */
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    border-radius:11px;font-weight:700;font-size:13.5px;padding:12px 20px;
+    border:1px solid transparent;transition:transform .15s ease,box-shadow .15s ease,background .2s,border-color .2s;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn svg{width:16px;height:16px;flex-shrink:0;}
+  .btn-primary{background:var(--green-deep);color:#fff;box-shadow:0 10px 24px -10px rgba(44,77,59,.55);}
+  .btn-primary:hover{background:var(--green);box-shadow:0 14px 30px -10px rgba(44,77,59,.6);transform:translateY(-1px);}
+  .btn-ghost{background:#fff;border-color:var(--line);color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--grey-light);background:var(--paper);}
+  .btn-danger{background:#fff;border-color:rgba(168,67,47,.3);color:var(--rust);}
+  .btn-danger:hover{background:var(--rust-soft);border-color:var(--rust);}
+  .btn-sm{padding:8px 14px;font-size:12.5px;border-radius:9px;}
+  .btn-icon{padding:9px;border-radius:9px;}
+  .btn:disabled{opacity:.55;cursor:not-allowed;transform:none !important;}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.03em;font-family:'IBM Plex Mono',monospace;}
+  .badge .dot{width:6px;height:6px;border-radius:99px;background:currentColor;}
+  .badge-in{background:var(--green-soft);color:var(--green-deep);}
+  .badge-low{background:var(--amber-soft);color:var(--amber);}
+  .badge-out{background:var(--rust-soft);color:var(--rust);}
+
+  /* ===== animations ===== */
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  @keyframes scaleIn{from{opacity:0;transform:scale(.94) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+  @keyframes shimmer{0%{background-position:-300px 0;}100%{background-position:300px 0;}}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(120,190,150,.35);}50%{box-shadow:0 0 0 7px rgba(120,190,150,0);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes floatBlob{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(24px,-18px) scale(1.06);}66%{transform:translate(-18px,14px) scale(.96);}}
+  .fade-up{animation:fadeInUp .55s cubic-bezier(.2,.8,.2,1) both;}
+  .skeleton{background:linear-gradient(90deg,#eceeec 25%,#f6f7f5 37%,#eceeec 63%);background-size:400px 100%;animation:shimmer 1.4s infinite linear;border-radius:8px;}
+
+  /* ===== LOGIN SCREEN ===== */
+  #loginScreen{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    position:relative;overflow-y:auto;overflow-x:hidden;padding:32px 24px;
+    background:radial-gradient(circle at 20% 20%,#233c2e 0%,#1a2b21 45%,#141f19 100%);
+  }
+  #loginScreen .blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:.35;animation:floatBlob 12s ease-in-out infinite;pointer-events:none;}
+  #loginScreen .blob-1{width:380px;height:380px;background:#3f6b52;top:-60px;left:-60px;}
+  #loginScreen .blob-2{width:320px;height:320px;background:#a8432f;bottom:-80px;right:-40px;animation-delay:-4s;}
+  #loginScreen .blob-3{width:260px;height:260px;background:#5b8f70;top:40%;right:15%;animation-delay:-8s;}
+  .login-card{
+    position:relative;z-index:2;width:100%;max-width:394px;margin:auto;
+    background:rgba(255,255,255,.98);border-radius:22px;
+    padding:34px 34px 28px;box-shadow:0 40px 90px -20px rgba(0,0,0,.5);
+    animation:scaleIn .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .login-brand{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:20px;}
+  .login-brand img{height:128px;width:auto;margin-bottom:8px;}
+  .login-brand p{font-size:12.5px;color:var(--grey);font-family:'IBM Plex Mono';letter-spacing:.08em;text-transform:uppercase;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--grey);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+  .field input{
+    width:100%;border:1.5px solid var(--line);border-radius:11px;padding:13px 14px;
+    font-size:14px;color:var(--ink);background:var(--paper-raised);transition:border-color .2s,background .2s;
+  }
+  .field input:focus{outline:none;border-color:var(--green-deep);background:#fff;}
+  .login-error{
+    display:none;align-items:center;gap:8px;background:var(--rust-soft);color:var(--rust);
+    font-size:12.5px;font-weight:600;padding:11px 13px;border-radius:10px;margin-bottom:14px;
+    animation:fadeInUp .3s ease both;
+  }
+  .login-error svg{width:15px;height:15px;flex-shrink:0;}
+  .login-error.show{display:flex;}
+  .btn-login{width:100%;padding:14px;font-size:14px;margin-top:6px;}
+  .btn-login .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+  .btn-login.loading .spinner{display:inline-block;}
+  .btn-login.loading .lbl{opacity:.8;}
+  .login-foot{margin-top:16px;text-align:center;font-size:11px;color:var(--grey-light);line-height:1.5;}
+
+  /* ===== APP SHELL ===== */
+  #adminApp{display:none;}
+  #adminApp.ready{display:flex;min-height:100vh;}
+
+  /* ---- sidebar ---- */
+  .sidebar{
+    width:var(--sidebar-w);flex-shrink:0;position:sticky;top:0;height:100vh;
+    background:linear-gradient(165deg,#1c2b22 0%,#233c2e 45%,#2c4d3b 100%);
+    display:flex;flex-direction:column;padding:22px 16px;
+    transition:width .28s cubic-bezier(.2,.8,.2,1);z-index:100;
+  }
+  .sidebar.collapsed{width:var(--sidebar-w-collapsed);}
+  .sb-top{display:flex;align-items:center;gap:11px;padding:6px 8px 22px;}
+  .sb-logo{width:38px;height:38px;border-radius:10px;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .sb-logo img{width:100%;height:100%;object-fit:contain;padding:5px;}
+  .sb-brand-text{overflow:hidden;white-space:nowrap;transition:opacity .2s,width .2s;}
+  .sb-brand-text b{color:#fff;font-family:'Space Grotesk';font-size:14.5px;display:block;}
+  .sb-brand-text span{color:rgba(255,255,255,.5);font-size:10px;font-family:'IBM Plex Mono';letter-spacing:.08em;text-transform:uppercase;}
+  .sidebar.collapsed .sb-brand-text{opacity:0;width:0;}
+
+  .sb-collapse-btn{
+    margin-left:auto;flex-shrink:0;width:28px;height:28px;border-radius:8px;border:none;
+    background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;
+    transition:background .2s,transform .3s;
+  }
+  .sb-collapse-btn:hover{background:rgba(255,255,255,.16);}
+  .sb-collapse-btn svg{width:14px;height:14px;transition:transform .3s;}
+  .sidebar.collapsed .sb-collapse-btn svg{transform:rotate(180deg);}
+  .sidebar.collapsed .sb-top{justify-content:center;}
+  .sidebar.collapsed .sb-collapse-btn{display:none;}
+
+  .sb-nav{display:flex;flex-direction:column;gap:5px;margin-top:6px;}
+  .sb-item{
+    display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;
+    color:rgba(255,255,255,.65);font-size:13.5px;font-weight:600;border:none;background:none;
+    width:100%;text-align:left;position:relative;transition:background .2s,color .2s;white-space:nowrap;overflow:hidden;
+  }
+  .sb-item:hover{background:rgba(255,255,255,.07);color:#fff;}
+  .sb-item.active{background:rgba(255,255,255,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+  .sb-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:99px;background:#7bd9a5;box-shadow:0 0 10px 1px rgba(123,217,165,.7);animation:pulseGlow 2.4s infinite;}
+  .sb-icon{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sb-item.active .sb-icon{background:rgba(123,217,165,.22);}
+  .sb-icon svg{width:17px;height:17px;}
+  .sidebar.collapsed .sb-item span.lbl{display:none;}
+  .sidebar.collapsed .sb-item{justify-content:center;}
+
+  .sb-bottom{margin-top:auto;display:flex;flex-direction:column;gap:5px;}
+  .sb-divider{height:1px;background:rgba(255,255,255,.1);margin:10px 4px;}
+  .sb-admin-chip{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:12px;background:rgba(255,255,255,.06);margin-bottom:6px;overflow:hidden;}
+  .sb-avatar{width:32px;height:32px;border-radius:9px;background:#7bd9a5;color:#12291d;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Grotesk';}
+  .sb-admin-name{color:#fff;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sb-admin-role{color:rgba(255,255,255,.5);font-size:10.5px;font-family:'IBM Plex Mono';text-transform:uppercase;letter-spacing:.05em;}
+  .sidebar.collapsed .sb-admin-chip .sb-admin-text{display:none;}
+
+  /* ---- mobile sidebar ---- */
+  .sb-mobile-overlay{display:none;position:fixed;inset:0;background:rgba(15,22,17,.5);z-index:99;animation:fadeIn .2s ease;}
+  .sb-mobile-overlay.show{display:block;}
+  .sb-close-mobile{display:none;}
+
+  /* ---- main area ---- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{
+    position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:16px 28px;background:rgba(238,240,238,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+  }
+  .tb-left{display:flex;align-items:center;gap:14px;min-width:0;}
+  .tb-hamburger{display:none;width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid var(--line);align-items:center;justify-content:center;flex-shrink:0;}
+  .tb-hamburger svg{width:18px;height:18px;}
+  .tb-title h2{font-size:19px;font-weight:700;}
+  .tb-title p{font-size:12px;color:var(--grey);margin-top:1px;}
+  .tb-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .tb-date{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--grey);background:#fff;border:1px solid var(--line);padding:8px 13px;border-radius:99px;display:flex;align-items:center;gap:7px;}
+  .tb-date svg{width:13px;height:13px;color:var(--grey-light);}
+
+  .content{padding:26px 28px 60px;max-width:1440px;width:100%;margin:0 auto;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  @media(max-width:960px){
+    .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);width:270px;}
+    .sidebar.mobile-open{transform:translateX(0);}
+    .sidebar.collapsed{width:270px;}
+    .sidebar.collapsed .sb-brand-text{opacity:1;width:auto;}
+    .sidebar.collapsed .sb-item span.lbl{display:inline;}
+    .sidebar.collapsed .sb-item{justify-content:flex-start;}
+    .sb-collapse-btn{display:none;}
+    .tb-hamburger{display:flex;}
+    .tb-date{display:none;}
+    .topbar{padding:14px 16px;}
+    .content{padding:18px 16px 50px;}
+  }
+
+  /* ===== DASHBOARD ===== */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+  @media(max-width:1180px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.stat-grid{grid-template-columns:1fr;}}
+  .stat-card{
+    background:var(--card-bg);border:1px solid var(--line);border-radius:18px;padding:20px 20px 18px;
+    position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .stat-card:hover{transform:translateY(-3px);box-shadow:0 18px 34px -18px rgba(37,38,43,.25);}
+  .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .stat-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .stat-icon svg{width:19px;height:19px;}
+  .stat-icon.c-green{background:var(--green-soft);color:var(--green-deep);}
+  .stat-icon.c-rust{background:var(--rust-soft);color:var(--rust);}
+  .stat-icon.c-amber{background:var(--amber-soft);color:var(--amber);}
+  .stat-icon.c-ink{background:#eceeec;color:var(--ink);}
+  .stat-trend{font-size:11px;font-weight:700;font-family:'IBM Plex Mono';padding:4px 8px;border-radius:99px;}
+  .stat-trend.up{background:var(--green-soft);color:var(--green-deep);}
+  .stat-trend.warn{background:var(--amber-soft);color:var(--amber);}
+  .stat-num{font-family:'Space Grotesk';font-size:30px;font-weight:700;line-height:1;margin-bottom:6px;letter-spacing:-0.02em;}
+  .stat-label{font-size:12.5px;color:var(--grey);font-weight:500;}
+
+  .dash-row{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:16px;align-items:stretch;}
+  @media(max-width:1080px){.dash-row{grid-template-columns:1fr;}}
+  .panel{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;padding:22px;}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;}
+  .panel-head h3{font-size:15.5px;font-weight:700;}
+  .panel-head p{font-size:11.5px;color:var(--grey-light);margin-top:2px;}
+  .chart-wrap{position:relative;height:230px;}
+  .chart-legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;}
+  .legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--grey);font-weight:600;}
+  .legend-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0;}
+
+  .low-list{display:flex;flex-direction:column;gap:2px;max-height:260px;overflow-y:auto;}
+  .low-item{display:flex;align-items:center;gap:12px;padding:11px 6px;border-bottom:1px solid var(--paper);}
+  .low-item:last-child{border-bottom:none;}
+  .low-thumb{width:38px;height:38px;border-radius:9px;background:var(--paper);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--grey-light);}
+  .low-thumb img{width:100%;height:100%;object-fit:cover;}
+  .low-thumb svg{width:16px;height:16px;}
+  .low-info{flex:1;min-width:0;}
+  .low-info .n{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .low-info .c{font-size:11px;color:var(--grey-light);}
+  .low-qty{font-family:'IBM Plex Mono';font-size:12px;font-weight:700;flex-shrink:0;}
+  .empty-note{text-align:center;padding:30px 10px;color:var(--grey-light);font-size:12.5px;}
+  .empty-note svg{width:30px;height:30px;margin:0 auto 8px;opacity:.6;display:block;}
+
+  .cat-bars{display:flex;flex-direction:column;gap:12px;}
+  .cat-bar-row{display:grid;grid-template-columns:120px 1fr 40px;align-items:center;gap:10px;}
+  .cat-bar-label{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cat-bar-track{height:9px;background:var(--paper);border-radius:99px;overflow:hidden;}
+  .cat-bar-fill{height:100%;border-radius:99px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1);}
+  .cat-bar-val{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--grey);text-align:right;}
+
+  /* seed banner */
+  .seed-banner{
+    display:flex;align-items:center;gap:16px;background:linear-gradient(120deg,var(--green-deep),var(--green));
+    color:#fff;border-radius:18px;padding:20px 24px;margin-bottom:22px;animation:fadeInUp .5s ease both;
+  }
+  .seed-icon{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .seed-icon svg{width:22px;height:22px;}
+  .seed-text{flex:1;min-width:0;}
+  .seed-text h4{font-size:14.5px;margin-bottom:3px;}
+  .seed-text p{font-size:12px;opacity:.85;}
+  .seed-banner .btn{flex-shrink:0;}
+  .seed-banner .btn-ghost{background:rgba(255,255,255,.15);border-color:transparent;color:#fff;}
+  .seed-banner .btn-ghost:hover{background:rgba(255,255,255,.24);}
+  @media(max-width:640px){.seed-banner{flex-direction:column;align-items:flex-start;}}
+
+  /* ===== TEAM ACCESS ===== */
+  .invite-form{display:flex;gap:10px;flex-wrap:wrap;}
+  .invite-form input{
+    flex:1;min-width:220px;border:1.5px solid var(--line);border-radius:11px;padding:12px 14px;
+    font-size:13.5px;color:var(--ink);background:var(--paper-raised);transition:border-color .2s;
+  }
+  .invite-form input:focus{outline:none;border-color:var(--green-deep);background:#fff;}
+  .team-list{display:flex;flex-direction:column;gap:2px;max-height:340px;overflow-y:auto;}
+  .team-row{display:flex;align-items:center;gap:12px;padding:12px 6px;border-bottom:1px solid var(--paper);}
+  .team-row:last-child{border-bottom:none;}
+  .team-avatar{width:36px;height:36px;border-radius:10px;background:var(--green-soft);color:var(--green-deep);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Grotesk';}
+  .team-info{flex:1;min-width:0;}
+  .team-name{font-size:13px;font-weight:700;display:flex;align-items:center;flex-wrap:wrap;}
+  .team-email{font-size:11.5px;color:var(--grey-light);font-family:'IBM Plex Mono';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  /* ===== INVENTORY ===== */
+  .inv-toolbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+  .inv-search{
+    flex:1;min-width:200px;display:flex;align-items:center;gap:9px;background:#fff;border:1.5px solid var(--line);
+    border-radius:12px;padding:11px 14px;transition:border-color .2s;
+  }
+  .inv-search:focus-within{border-color:var(--green-deep);}
+  .inv-search svg{width:16px;height:16px;color:var(--grey-light);flex-shrink:0;}
+  .inv-search input{border:none;background:none;outline:none;font-size:13.5px;width:100%;color:var(--ink);}
+  .inv-cat-select{
+    background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;font-size:13px;font-weight:600;
+    color:var(--ink);min-width:170px;
+  }
+  .inv-count{font-size:12px;color:var(--grey-light);font-family:'IBM Plex Mono';white-space:nowrap;}
+
+  .inv-table-wrap{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+  table.inv-table{width:100%;border-collapse:collapse;}
+  .inv-table thead th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--grey-light);
+    font-weight:700;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--paper-raised);
+  }
+  .inv-table tbody tr{border-bottom:1px solid var(--paper);transition:background .15s;}
+  .inv-table tbody tr:last-child{border-bottom:none;}
+  .inv-table tbody tr:hover{background:var(--paper-raised);}
+  .inv-table td{padding:13px 18px;font-size:13.5px;vertical-align:middle;}
+  .inv-prod-cell{display:flex;align-items:center;gap:12px;min-width:220px;}
+  .inv-thumb{width:42px;height:42px;border-radius:10px;background:var(--paper);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--grey-light);}
+  .inv-thumb img{width:100%;height:100%;object-fit:cover;}
+  .inv-thumb svg{width:18px;height:18px;}
+  .inv-prod-name{font-weight:700;font-size:13.5px;}
+  .inv-prod-sku{font-size:11px;color:var(--grey-light);font-family:'IBM Plex Mono';}
+  .inv-actions{display:flex;gap:6px;justify-content:flex-end;}
+  .inv-qty-edit{font-family:'IBM Plex Mono';font-weight:700;}
+
+  .inv-cards{display:none;flex-direction:column;gap:10px;}
+  .inv-card{background:var(--card-bg);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:flex-start;animation:fadeInUp .4s ease both;}
+  .inv-card-body{flex:1;min-width:0;}
+  .inv-card-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
+  .inv-card-meta{display:flex;gap:12px;margin-top:8px;font-size:12px;color:var(--grey);flex-wrap:wrap;}
+  .inv-card-actions{display:flex;gap:8px;margin-top:12px;}
+
+  @media(max-width:820px){
+    .inv-table-wrap{display:none;}
+    .inv-cards{display:flex;}
+  }
+
+  .empty-state{text-align:center;padding:70px 20px;color:var(--grey-light);}
+  .empty-state svg{width:52px;height:52px;margin:0 auto 16px;opacity:.5;}
+  .empty-state h4{font-size:15px;color:var(--ink);margin-bottom:6px;}
+  .empty-state p{font-size:13px;max-width:340px;margin:0 auto;}
+
+  /* ===== MODAL ===== */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(20,25,20,.55);backdrop-filter:blur(3px);
+    z-index:200;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;
+  }
+  .modal-overlay.show{display:flex;animation:fadeIn .2s ease;}
+  .modal-box{
+    background:#fff;border-radius:20px;width:100%;max-width:520px;padding:26px 26px 22px;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.4);animation:scaleIn .3s cubic-bezier(.2,.8,.2,1) both;margin:auto 0;
+  }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .modal-head h3{font-size:17px;font-weight:700;}
+  .modal-close{width:32px;height:32px;border-radius:9px;background:var(--paper);border:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .modal-close svg{width:15px;height:15px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .form-grid .full{grid-column:1/-1;}
+  .form-field label{display:block;font-size:11.5px;font-weight:700;color:var(--grey);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;}
+  .form-field input,.form-field select{
+    width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font-size:13.5px;
+    color:var(--ink);background:var(--paper-raised);transition:border-color .2s;
+  }
+  .form-field input:focus,.form-field select:focus{outline:none;border-color:var(--green-deep);background:#fff;}
+  .form-hint{font-size:10.5px;color:var(--grey-light);margin-top:4px;}
+  .img-preview{
+    width:100%;height:110px;border-radius:10px;background:var(--paper);margin-top:8px;display:flex;align-items:center;
+    justify-content:center;overflow:hidden;color:var(--grey-light);border:1px dashed var(--line);
+  }
+  .img-preview img{width:100%;height:100%;object-fit:cover;}
+  .img-preview svg{width:22px;height:22px;}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+  .confirm-box{max-width:380px;text-align:center;padding:30px 26px 24px;}
+  .confirm-icon{width:52px;height:52px;border-radius:14px;background:var(--rust-soft);color:var(--rust);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+  .confirm-icon svg{width:24px;height:24px;}
+  .confirm-box h3{font-size:16px;margin-bottom:8px;}
+  .confirm-box p{font-size:13px;color:var(--grey);margin-bottom:20px;line-height:1.5;}
+  .confirm-actions{display:flex;gap:10px;}
+  .confirm-actions .btn{flex:1;}
+
+  /* ===== TOAST ===== */
+  #toastHost{position:fixed;bottom:22px;right:22px;z-index:300;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+  .toast{
+    display:flex;align-items:center;gap:10px;background:#1e2a22;color:#fff;padding:13px 18px;border-radius:12px;
+    font-size:13px;font-weight:600;box-shadow:0 20px 45px -15px rgba(0,0,0,.4);animation:toastIn .3s cubic-bezier(.2,.8,.2,1) both;
+    max-width:340px;
+  }
+  .toast.error{background:var(--rust);}
+  .toast .t-icon{width:18px;height:18px;flex-shrink:0;}
+  .toast.leaving{animation:toastOut .25s ease forwards;}
+  @keyframes toastIn{from{opacity:0;transform:translateX(30px) scale(.95);}to{opacity:1;transform:translateX(0) scale(1);}}
+  @keyframes toastOut{to{opacity:0;transform:translateX(30px) scale(.95);}}
+  @media(max-width:480px){#toastHost{left:14px;right:14px;bottom:14px;}.toast{max-width:none;}}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div id="loginScreen">
+  <span class="blob blob-1"></span>
+  <span class="blob blob-2"></span>
+  <span class="blob blob-3"></span>
+  <div class="login-card">
+    <div class="login-brand">
+      <img src="img/logo.png" alt="Outright Trading" onerror="this.style.display='none'">
+      <p>Admin Panel</p>
+    </div>
+    <div class="login-error" id="loginError">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+      <span id="loginErrorText">Invalid email or password.</span>
+    </div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" autocomplete="username" required placeholder="you@outrighttrading.com">
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-primary btn-login" id="loginSubmitBtn">
+        <span class="spinner"></span>
+        <span class="lbl">Sign in</span>
+      </button>
+    </form>
+    <div class="login-foot">Authorized staff only. Access is tied to your account's admin permission.</div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN APP ===================== -->
+<div id="adminApp">
+  <div class="sb-mobile-overlay" id="sbOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo"><img src="img/logo.png" alt="" onerror="this.style.display='none'"></div>
+      <div class="sb-brand-text">
+        <b>Outright Trading</b>
+        <span>Admin</span>
+      </div>
+      <button class="sb-collapse-btn" id="sbCollapseBtn" title="Collapse sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+    </div>
+    <nav class="sb-nav">
+      <button class="sb-item active" data-view="dashboard">
+        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="9" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="12" width="8" height="9" rx="2"/><rect x="3" y="16" width="8" height="5" rx="2"/></svg></span>
+        <span class="lbl">Dashboard</span>
+      </button>
+      <button class="sb-item" data-view="inventory">
+        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7 12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg></span>
+        <span class="lbl">Inventory</span>
+      </button>
+      <button class="sb-item" data-view="team" id="sbTeamNavItem" style="display:none;">
+        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <span class="lbl">Team Access</span>
+      </button>
+      <a class="sb-item" href="index.html" target="_blank" rel="noopener">
+        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg></span>
+        <span class="lbl">View Storefront</span>
+      </a>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-divider"></div>
+      <div class="sb-admin-chip">
+        <div class="sb-avatar" id="sbAvatar">A</div>
+        <div class="sb-admin-text">
+          <div class="sb-admin-name" id="sbAdminName">Admin</div>
+          <div class="sb-admin-role" id="sbAdminRole">Administrator</div>
+        </div>
+      </div>
+      <button class="sb-item" id="logoutBtn">
+        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg></span>
+        <span class="lbl">Log out</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="tb-left">
+        <button class="tb-hamburger" id="tbHamburger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="tb-title">
+          <h2 id="tbTitle">Dashboard</h2>
+          <p id="tbSubtitle">Overview of your inventory &amp; performance</p>
+        </div>
+      </div>
+      <div class="tb-right">
+        <span class="tb-date" id="tbDate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+          <span id="tbDateText">—</span>
+        </span>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ===== DASHBOARD VIEW ===== -->
+      <section class="view active" id="viewDashboard">
+        <div class="seed-banner" id="seedBanner" style="display:none;">
+          <div class="seed-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V5a2 2 0 0 0-2-2h-3M3 8V5a2 2 0 0 1 2-2h3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></div>
+          <div class="seed-text">
+            <h4>No products yet</h4>
+            <p>Import the 14-item starter catalogue to get your inventory going, or add products manually.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="seedBtn">Import starter catalogue</button>
+        </div>
+
+        <div class="stat-grid" id="statGrid">
+          <div class="stat-card fade-up">
+            <div class="stat-top">
+              <div class="stat-icon c-ink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7 12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4"/></svg></div>
+            </div>
+            <div class="stat-num" id="statTotalProducts">0</div>
+            <div class="stat-label">Total Products</div>
+          </div>
+          <div class="stat-card fade-up" style="animation-delay:.06s">
+            <div class="stat-top">
+              <div class="stat-icon c-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            </div>
+            <div class="stat-num" id="statInvValue">MVR 0</div>
+            <div class="stat-label">Total Inventory Value</div>
+          </div>
+          <div class="stat-card fade-up" style="animation-delay:.12s">
+            <div class="stat-top">
+              <div class="stat-icon c-amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.86a2 2 0 0 0-3.4 0Z"/></svg></div>
+            </div>
+            <div class="stat-num" id="statLowStock">0</div>
+            <div class="stat-label">Low Stock Items</div>
+          </div>
+          <div class="stat-card fade-up" style="animation-delay:.18s">
+            <div class="stat-top">
+              <div class="stat-icon c-rust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg></div>
+            </div>
+            <div class="stat-num" id="statOutStock">0</div>
+            <div class="stat-label">Out of Stock</div>
+          </div>
+        </div>
+
+        <div class="dash-row">
+          <div class="panel fade-up" style="animation-delay:.1s">
+            <div class="panel-head">
+              <div>
+                <h3>Products by Category</h3>
+                <p>Distribution across your catalogue</p>
+              </div>
+            </div>
+            <div class="cat-bars" id="catBars"></div>
+          </div>
+          <div class="panel fade-up" style="animation-delay:.16s">
+            <div class="panel-head">
+              <div>
+                <h3>Stock Health</h3>
+                <p>Current status breakdown</p>
+              </div>
+            </div>
+            <div class="chart-wrap"><canvas id="stockChart"></canvas></div>
+            <div class="chart-legend" id="stockLegend"></div>
+          </div>
+        </div>
+
+        <div class="panel fade-up" style="animation-delay:.2s">
+          <div class="panel-head">
+            <div>
+              <h3>Needs Attention</h3>
+              <p>Low or out-of-stock items to restock soon</p>
+            </div>
+            <button class="btn btn-ghost btn-sm" data-goto="inventory">View all</button>
+          </div>
+          <div class="low-list" id="lowList"></div>
+        </div>
+      </section>
+
+      <!-- ===== INVENTORY VIEW ===== -->
+      <section class="view" id="viewInventory">
+        <div class="inv-toolbar">
+          <div class="inv-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="invSearch" placeholder="Search by name or SKU…">
+          </div>
+          <select class="inv-cat-select" id="invCatFilter">
+            <option value="all">All Categories</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Household">Household</option>
+            <option value="Personal Care">Personal Care</option>
+            <option value="Frozen & Dairy">Frozen &amp; Dairy</option>
+          </select>
+          <span class="inv-count" id="invCount">0 products</span>
+          <button class="btn btn-primary btn-sm" id="addProductBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Add Product
+          </button>
+        </div>
+
+        <div class="inv-table-wrap" id="invTableWrap">
+          <table class="inv-table">
+            <thead>
+              <tr>
+                <th>Product</th><th>Category</th><th>Price</th><th>Qty</th><th>Status</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="invTableBody"></tbody>
+          </table>
+        </div>
+        <div class="inv-cards" id="invCards"></div>
+        <div class="empty-state" id="invEmpty" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7 12 3 4 7v10l8 4 8-4V7Z"/><path d="M4 7l8 4 8-4"/></svg>
+          <h4>No products found</h4>
+          <p>Try a different search or category filter, or add your first product.</p>
+        </div>
+      </section>
+
+      <!-- ===== TEAM ACCESS VIEW (super admin only) ===== -->
+      <section class="view" id="viewTeam">
+        <div class="panel fade-up" style="margin-bottom:16px;">
+          <div class="panel-head">
+            <div>
+              <h3>Invite an Admin</h3>
+              <p>They'll get access using this email — either right away, or the moment they sign up / log in with it.</p>
+            </div>
+          </div>
+          <form id="inviteForm" class="invite-form">
+            <input type="email" id="inviteEmail" required placeholder="teammate@email.com">
+            <button type="submit" class="btn btn-primary" id="inviteSubmitBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
+              Send Invite
+            </button>
+          </form>
+        </div>
+
+        <div class="dash-row" style="align-items:flex-start;">
+          <div class="panel fade-up" style="animation-delay:.06s">
+            <div class="panel-head">
+              <div>
+                <h3>Current Admins</h3>
+                <p>People with access to this panel</p>
+              </div>
+            </div>
+            <div class="team-list" id="adminsList"></div>
+          </div>
+          <div class="panel fade-up" style="animation-delay:.12s">
+            <div class="panel-head">
+              <div>
+                <h3>Pending Invites</h3>
+                <p>Not yet activated</p>
+              </div>
+            </div>
+            <div class="team-list" id="invitesList"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PRODUCT MODAL ===================== -->
+<div class="modal-overlay" id="productModalOverlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="productModalTitle">Add Product</h3>
+      <button class="modal-close" id="productModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="productForm">
+      <input type="hidden" id="pfId">
+      <div class="form-grid">
+        <div class="form-field full">
+          <label for="pfName">Product Name</label>
+          <input type="text" id="pfName" required placeholder="e.g. Sparkling Cola 24-Pack">
+        </div>
+        <div class="form-field">
+          <label for="pfSku">SKU</label>
+          <input type="text" id="pfSku" required placeholder="e.g. BEV-1024">
+        </div>
+        <div class="form-field">
+          <label for="pfCat">Category</label>
+          <select id="pfCat" required>
+            <option value="Beverages">Beverages</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Household">Household</option>
+            <option value="Personal Care">Personal Care</option>
+            <option value="Frozen & Dairy">Frozen &amp; Dairy</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="pfPrice">Price (MVR)</label>
+          <input type="number" id="pfPrice" required min="0" step="0.01" placeholder="210">
+        </div>
+        <div class="form-field">
+          <label for="pfUnit">Unit</label>
+          <input type="text" id="pfUnit" required placeholder="/ carton">
+        </div>
+        <div class="form-field">
+          <label for="pfQty">Quantity in Stock</label>
+          <input type="number" id="pfQty" required min="0" step="1" placeholder="40">
+        </div>
+        <div class="form-field">
+          <label for="pfThreshold">Low Stock Threshold</label>
+          <input type="number" id="pfThreshold" required min="0" step="1" value="10">
+          <div class="form-hint">Status turns "Low" at or below this quantity.</div>
+        </div>
+        <div class="form-field full">
+          <label for="pfImg">Image URL</label>
+          <input type="text" id="pfImg" placeholder="img/products/example.jpg">
+          <div class="img-preview" id="pfImgPreview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" id="productModalCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="productSaveBtn">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== CONFIRM DELETE MODAL ===================== -->
+<div class="modal-overlay" id="confirmModalOverlay">
+  <div class="modal-box confirm-box">
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+    </div>
+    <h3>Delete this product?</h3>
+    <p id="confirmText">This action can't be undone. The product will be removed from your live storefront immediately.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" id="confirmCancelBtn">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+
+<!-- Firebase (compat SDK) + auth.js (reused from the storefront — sets up
+     window `auth` and `db`, plus login helpers) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+<script>
+/* =========================================================
+   OUTRIGHT TRADING — ADMIN PANEL
+========================================================= */
+
+const placeholderThumbSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`;
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function showToast(msg, type){
+  const host = document.getElementById('toastHost');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'error' ? ' error' : '');
+  t.innerHTML = `<svg class="t-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${type==='error' ? '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>' : '<path d="M20 6 9 17l-5-5"/>'}</svg><span>${escapeHtml(msg)}</span>`;
+  host.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('leaving');
+    setTimeout(() => t.remove(), 300);
+  }, 3200);
+}
+
+function countUp(el, to, opts){
+  opts = opts || {};
+  const dur = 900;
+  const start = performance.now();
+  function tick(now){
+    const p = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = Math.round(to * eased);
+    el.textContent = (opts.prefix || '') + val.toLocaleString('en-US');
+    if(p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ============ LOGIN ============ */
+const loginScreen = document.getElementById('loginScreen');
+const adminApp = document.getElementById('adminApp');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+const loginErrorText = document.getElementById('loginErrorText');
+const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+
+function showLoginError(msg){
+  loginErrorText.textContent = msg;
+  loginError.classList.add('show');
+}
+function hideLoginError(){ loginError.classList.remove('show'); }
+function setLoginLoading(on){
+  loginSubmitBtn.classList.toggle('loading', on);
+  loginSubmitBtn.disabled = on;
+}
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideLoginError();
+  setLoginLoading(true);
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  try{
+    await auth.signInWithEmailAndPassword(email, password);
+    /* onAuthStateChanged below takes it from here */
+  } catch(err){
+    setLoginLoading(false);
+    if(['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-email'].includes(err.code)){
+      showLoginError('Invalid email or password.');
+    } else if(err.code === 'auth/too-many-requests'){
+      showLoginError('Too many attempts. Please wait a moment and try again.');
+    } else {
+      showLoginError(err.message || 'Something went wrong. Please try again.');
+    }
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  logoutFirebase();
+});
+
+function normalizeEmailKey(email){ return (email || '').trim().toLowerCase(); }
+
+auth.onAuthStateChanged(async (user) => {
+  if(!user){
+    adminApp.classList.remove('ready');
+    loginScreen.style.display = 'flex';
+    setLoginLoading(false);
+    stopProductsListener();
+    stopTeamListeners();
+    document.getElementById('sbTeamNavItem').style.display = 'none';
+    return;
+  }
+  try{
+    const userRef = db.collection('users').doc(user.uid);
+    let snap = await userRef.get();
+    let data = snap.exists ? snap.data() : {};
+    let isAdmin = data.isAdmin === true;
+    const isSuperAdmin = data.isSuperAdmin === true;
+
+    /* Not an admin yet? Check if a super admin invited this email —
+       if so, activate access automatically, right now. */
+    if(!isAdmin && !isSuperAdmin){
+      const emailKey = normalizeEmailKey(user.email);
+      if(emailKey){
+        const inviteSnap = await db.collection('adminInvites').doc(emailKey).get();
+        if(inviteSnap.exists){
+          await userRef.set({ isAdmin: true }, { merge: true });
+          await db.collection('adminInvites').doc(emailKey).delete();
+          isAdmin = true;
+          snap = await userRef.get();
+          data = snap.data();
+        }
+      }
+    }
+
+    if(!isAdmin && !isSuperAdmin){
+      showLoginError('This account does not have admin access.');
+      setLoginLoading(false);
+      await auth.signOut();
+      return;
+    }
+    loginScreen.style.display = 'none';
+    adminApp.classList.add('ready');
+    const name = user.displayName || data.name || user.email || 'Admin';
+    document.getElementById('sbAdminName').textContent = name;
+    document.getElementById('sbAvatar').textContent = name.trim().charAt(0).toUpperCase();
+    document.getElementById('sbAdminRole').textContent = isSuperAdmin ? 'Super Admin' : 'Administrator';
+    document.getElementById('tbDateText').textContent = new Date().toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+    document.getElementById('sbTeamNavItem').style.display = isSuperAdmin ? 'flex' : 'none';
+    window.currentUserIsSuperAdmin = isSuperAdmin;
+    startProductsListener();
+    if(isSuperAdmin) startTeamListeners();
+  } catch(err){
+    showLoginError('Could not verify admin access. Please try again.');
+    setLoginLoading(false);
+    await auth.signOut();
+  }
+});
+
+/* ============ SIDEBAR / NAVIGATION ============ */
+const sidebar = document.getElementById('sidebar');
+const sbItems = document.querySelectorAll('.sb-item[data-view]');
+const views = { dashboard: document.getElementById('viewDashboard'), inventory: document.getElementById('viewInventory'), team: document.getElementById('viewTeam') };
+const titles = {
+  dashboard: ['Dashboard', 'Overview of your inventory & performance'],
+  inventory: ['Inventory', 'Manage your product catalogue'],
+  team: ['Team Access', 'Manage who can access this admin panel']
+};
+function switchView(name){
+  sbItems.forEach(i => i.classList.toggle('active', i.dataset.view === name));
+  Object.keys(views).forEach(k => views[k].classList.toggle('active', k === name));
+  document.getElementById('tbTitle').textContent = titles[name][0];
+  document.getElementById('tbSubtitle').textContent = titles[name][1];
+  closeMobileSidebar();
+}
+sbItems.forEach(item => item.addEventListener('click', () => switchView(item.dataset.view)));
+document.querySelectorAll('[data-goto]').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.goto)));
+
+const sbCollapseBtn = document.getElementById('sbCollapseBtn');
+sbCollapseBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('collapsed');
+  localStorage.setItem('outrightAdminSidebarCollapsed', sidebar.classList.contains('collapsed') ? '1' : '0');
+});
+if(localStorage.getItem('outrightAdminSidebarCollapsed') === '1') sidebar.classList.add('collapsed');
+
+const sbOverlay = document.getElementById('sbOverlay');
+function openMobileSidebar(){ sidebar.classList.add('mobile-open'); sbOverlay.classList.add('show'); }
+function closeMobileSidebar(){ sidebar.classList.remove('mobile-open'); sbOverlay.classList.remove('show'); }
+document.getElementById('tbHamburger').addEventListener('click', openMobileSidebar);
+sbOverlay.addEventListener('click', closeMobileSidebar);
+
+/* ============ PRODUCTS: LIVE DATA ============ */
+let allProducts = [];
+let productsUnsub = null;
+let stockChartInstance = null;
+
+const CAT_LIST = ['Beverages','Snacks','Household','Personal Care','Frozen & Dairy'];
+const CAT_COLORS = { 'Beverages':'#3f6b52', 'Snacks':'#c97a4a', 'Household':'#a8432f', 'Personal Care':'#6b8fa0', 'Frozen & Dairy':'#5b8ac4' };
+
+function startProductsListener(){
+  if(productsUnsub) return;
+  productsUnsub = db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snap => {
+    allProducts = snap.docs.map(doc => {
+      const d = doc.data();
+      const qty = typeof d.qty === 'number' ? d.qty : 0;
+      const threshold = typeof d.lowStockThreshold === 'number' ? d.lowStockThreshold : 10;
+      const status = qty <= 0 ? 'out' : (qty <= threshold ? 'low' : 'in');
+      return {
+        id: doc.id,
+        name: d.name || 'Unnamed product',
+        sku: d.sku || doc.id,
+        cat: d.cat || 'Household',
+        price: typeof d.price === 'number' ? d.price : parseFloat(d.price) || 0,
+        unit: d.unit || '',
+        qty, threshold, status,
+        img: d.img || ''
+      };
+    });
+    document.getElementById('seedBanner').style.display = allProducts.length === 0 ? 'flex' : 'none';
+    renderDashboard();
+    renderInventory();
+  }, err => {
+    showToast('Could not load products: ' + err.message, 'error');
+  });
+}
+function stopProductsListener(){
+  if(productsUnsub){ productsUnsub(); productsUnsub = null; }
+  allProducts = [];
+}
+
+/* ============ SEED / STARTER CATALOGUE ============ */
+const SEED_PRODUCTS = [
+  { name:"Sparkling Cola 24-Pack", sku:"BEV-1024", cat:"Beverages", price:210, unit:"/ carton", qty:40 },
+  { name:"Bottled Water 500ml (Case)", sku:"BEV-1032", cat:"Beverages", price:95, unit:"/ carton", qty:55 },
+  { name:"Instant Coffee 200g Tin", sku:"BEV-1041", cat:"Beverages", price:340, unit:"/ case", qty:8 },
+  { name:"Potato Chips Family Pack", sku:"SNK-2010", cat:"Snacks", price:180, unit:"/ carton", qty:35 },
+  { name:"Assorted Biscuits Tray", sku:"SNK-2023", cat:"Snacks", price:145, unit:"/ tray", qty:30 },
+  { name:"Chocolate Bar Display Box", sku:"SNK-2044", cat:"Snacks", price:260, unit:"/ box", qty:25 },
+  { name:"Dish Soap 1L (Case of 12)", sku:"HHD-3011", cat:"Household", price:220, unit:"/ case", qty:20 },
+  { name:"Laundry Detergent 3kg", sku:"HHD-3028", cat:"Household", price:410, unit:"/ case", qty:6 },
+  { name:"Paper Towels 6-Roll Pack", sku:"HHD-3035", cat:"Household", price:165, unit:"/ carton", qty:28 },
+  { name:"Toothpaste 100ml (Case)", sku:"PCR-4012", cat:"Personal Care", price:195, unit:"/ case", qty:22 },
+  { name:"Bar Soap Multipack", sku:"PCR-4026", cat:"Personal Care", price:130, unit:"/ carton", qty:18 },
+  { name:"Frozen Chicken Nuggets 1kg", sku:"FRZ-5014", cat:"Frozen & Dairy", price:88, unit:"/ unit", qty:33 },
+  { name:"UHT Milk 1L (Case of 12)", sku:"FRZ-5022", cat:"Frozen & Dairy", price:250, unit:"/ case", qty:7 },
+  { name:"Butter Blocks 500g (Case)", sku:"FRZ-5031", cat:"Frozen & Dairy", price:300, unit:"/ case", qty:16 },
+];
+document.getElementById('seedBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('seedBtn');
+  btn.disabled = true; const originalLabel = btn.textContent; btn.textContent = 'Importing…';
+  try{
+    const batch = db.batch();
+    SEED_PRODUCTS.forEach(p => {
+      const ref = db.collection('products').doc();
+      batch.set(ref, Object.assign({}, p, { lowStockThreshold: 10, img: '', createdAt: firebase.firestore.FieldValue.serverTimestamp() }));
+    });
+    await batch.commit();
+    showToast('Starter catalogue imported!');
+  } catch(err){
+    showToast('Import failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = originalLabel;
+  }
+});
+
+/* ============ DASHBOARD RENDER ============ */
+function renderDashboard(){
+  const total = allProducts.length;
+  const invValue = allProducts.reduce((s,p) => s + (p.qty * p.price), 0);
+  const low = allProducts.filter(p => p.status === 'low').length;
+  const out = allProducts.filter(p => p.status === 'out').length;
+  const inStock = allProducts.filter(p => p.status === 'in').length;
+
+  countUp(document.getElementById('statTotalProducts'), total);
+  countUp(document.getElementById('statInvValue'), Math.round(invValue), { prefix: 'MVR ' });
+  countUp(document.getElementById('statLowStock'), low);
+  countUp(document.getElementById('statOutStock'), out);
+
+  const maxCount = Math.max(1, ...CAT_LIST.map(c => allProducts.filter(p => p.cat === c).length));
+  const catBarsEl = document.getElementById('catBars');
+  catBarsEl.innerHTML = CAT_LIST.map(c => {
+    const count = allProducts.filter(p => p.cat === c).length;
+    const pct = Math.round((count / maxCount) * 100);
+    return `<div class="cat-bar-row">
+      <div class="cat-bar-label">${c}</div>
+      <div class="cat-bar-track"><div class="cat-bar-fill" style="background:${CAT_COLORS[c]}" data-w="${pct}"></div></div>
+      <div class="cat-bar-val">${count}</div>
+    </div>`;
+  }).join('');
+  setTimeout(() => {
+    catBarsEl.querySelectorAll('.cat-bar-fill').forEach(el => { el.style.width = el.dataset.w + '%'; });
+  }, 60);
+
+  const chartCanvas = document.getElementById('stockChart');
+  if(stockChartInstance){ stockChartInstance.destroy(); stockChartInstance = null; }
+  if(total > 0){
+    chartCanvas.style.display = 'block';
+    stockChartInstance = new Chart(chartCanvas.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: ['In Stock','Low Stock','Out of Stock'],
+        datasets: [{ data: [inStock, low, out], backgroundColor: ['#3f6b52','#b8842b','#a8432f'], borderWidth: 0, hoverOffset: 6 }]
+      },
+      options: {
+        cutout: '68%',
+        plugins: { legend: { display: false } },
+        animation: { animateRotate: true, animateScale: true, duration: 900, easing: 'easeOutQuart' }
+      }
+    });
+  } else {
+    chartCanvas.style.display = 'none';
+  }
+  document.getElementById('stockLegend').innerHTML = [
+    ['#3f6b52','In Stock', inStock],
+    ['#b8842b','Low Stock', low],
+    ['#a8432f','Out of Stock', out]
+  ].map(([color,label,val]) => `<span class="legend-item"><span class="legend-dot" style="background:${color}"></span>${label} (${val})</span>`).join('');
+
+  const lowListEl = document.getElementById('lowList');
+  const attention = allProducts.filter(p => p.status !== 'in').sort((a,b) => a.qty - b.qty).slice(0,8);
+  if(attention.length === 0){
+    lowListEl.innerHTML = `<div class="empty-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>${total === 0 ? 'Add products to see stock alerts here.' : 'All stocked up — nothing needs attention.'}</div>`;
+  } else {
+    lowListEl.innerHTML = attention.map(p => `
+      <div class="low-item">
+        <div class="low-thumb">${p.img ? `<img src="${p.img}" alt="">` : placeholderThumbSvg}</div>
+        <div class="low-info">
+          <div class="n">${escapeHtml(p.name)}</div>
+          <div class="c">${p.cat} · ${p.sku}</div>
+        </div>
+        <span class="badge badge-${p.status}"><span class="dot"></span>${p.status === 'out' ? 'Out' : 'Low'}</span>
+        <span class="low-qty">${p.qty} left</span>
+      </div>
+    `).join('');
+  }
+}
+
+/* ============ INVENTORY RENDER ============ */
+function getFilteredProducts(){
+  const q = document.getElementById('invSearch').value.trim().toLowerCase();
+  const cat = document.getElementById('invCatFilter').value;
+  return allProducts.filter(p => {
+    const matchesCat = cat === 'all' || p.cat === cat;
+    const matchesQ = !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+    return matchesCat && matchesQ;
+  });
+}
+
+function statusLabel(s){ return s === 'in' ? 'In Stock' : (s === 'low' ? 'Low Stock' : 'Out of Stock'); }
+
+function renderInventory(){
+  const items = getFilteredProducts();
+  document.getElementById('invCount').textContent = `${items.length} product${items.length === 1 ? '' : 's'}`;
+  const tbody = document.getElementById('invTableBody');
+  const cardsEl = document.getElementById('invCards');
+  const emptyEl = document.getElementById('invEmpty');
+
+  if(items.length === 0){
+    tbody.innerHTML = '';
+    cardsEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  tbody.innerHTML = items.map(p => `
+    <tr>
+      <td>
+        <div class="inv-prod-cell">
+          <div class="inv-thumb">${p.img ? `<img src="${p.img}" alt="">` : placeholderThumbSvg}</div>
+          <div>
+            <div class="inv-prod-name">${escapeHtml(p.name)}</div>
+            <div class="inv-prod-sku">${p.sku}</div>
+          </div>
+        </div>
+      </td>
+      <td>${p.cat}</td>
+      <td class="mono">MVR ${p.price.toLocaleString('en-US')} <span style="color:var(--grey-light);font-size:11px">${p.unit}</span></td>
+      <td class="inv-qty-edit">${p.qty}</td>
+      <td><span class="badge badge-${p.status}"><span class="dot"></span>${statusLabel(p.status)}</span></td>
+      <td>
+        <div class="inv-actions">
+          <button class="btn btn-ghost btn-icon" data-edit="${p.id}" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button>
+          <button class="btn btn-danger btn-icon" data-delete="${p.id}" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  cardsEl.innerHTML = items.map((p, idx) => `
+    <div class="inv-card" style="animation-delay:${Math.min(idx * 40, 300)}ms">
+      <div class="inv-thumb" style="width:52px;height:52px;">${p.img ? `<img src="${p.img}" alt="">` : placeholderThumbSvg}</div>
+      <div class="inv-card-body">
+        <div class="inv-card-top">
+          <div>
+            <div class="inv-prod-name">${escapeHtml(p.name)}</div>
+            <div class="inv-prod-sku">${p.sku} · ${p.cat}</div>
+          </div>
+          <span class="badge badge-${p.status}"><span class="dot"></span>${p.status === 'in' ? 'In' : (p.status === 'low' ? 'Low' : 'Out')}</span>
+        </div>
+        <div class="inv-card-meta">
+          <span class="mono">MVR ${p.price.toLocaleString('en-US')} ${p.unit}</span>
+          <span class="mono">Qty: ${p.qty}</span>
+        </div>
+        <div class="inv-card-actions">
+          <button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button>
+          <button class="btn btn-danger btn-sm" data-delete="${p.id}">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openEditModal(b.dataset.edit)));
+  document.querySelectorAll('[data-delete]').forEach(b => b.addEventListener('click', () => openDeleteConfirm(b.dataset.delete)));
+}
+document.getElementById('invSearch').addEventListener('input', renderInventory);
+document.getElementById('invCatFilter').addEventListener('change', renderInventory);
+
+/* ============ PRODUCT MODAL (ADD / EDIT) ============ */
+let editingProductId = null;
+const productModalOverlay = document.getElementById('productModalOverlay');
+const productForm = document.getElementById('productForm');
+const pfImg = document.getElementById('pfImg');
+const pfImgPreview = document.getElementById('pfImgPreview');
+
+function openAddModal(){
+  editingProductId = null;
+  document.getElementById('productModalTitle').textContent = 'Add Product';
+  productForm.reset();
+  document.getElementById('pfThreshold').value = 10;
+  pfImgPreview.innerHTML = placeholderThumbSvg;
+  productModalOverlay.classList.add('show');
+  document.getElementById('pfName').focus();
+}
+function openEditModal(id){
+  const p = allProducts.find(x => x.id === id);
+  if(!p) return;
+  editingProductId = id;
+  document.getElementById('productModalTitle').textContent = 'Edit Product';
+  document.getElementById('pfId').value = p.id;
+  document.getElementById('pfName').value = p.name;
+  document.getElementById('pfSku').value = p.sku;
+  document.getElementById('pfCat').value = p.cat;
+  document.getElementById('pfPrice').value = p.price;
+  document.getElementById('pfUnit').value = p.unit;
+  document.getElementById('pfQty').value = p.qty;
+  document.getElementById('pfThreshold').value = p.threshold;
+  pfImg.value = p.img || '';
+  pfImgPreview.innerHTML = p.img ? `<img src="${p.img}" alt="">` : placeholderThumbSvg;
+  productModalOverlay.classList.add('show');
+}
+function closeProductModal(){ productModalOverlay.classList.remove('show'); editingProductId = null; }
+
+document.getElementById('addProductBtn').addEventListener('click', openAddModal);
+document.getElementById('productModalClose').addEventListener('click', closeProductModal);
+document.getElementById('productModalCancel').addEventListener('click', closeProductModal);
+productModalOverlay.addEventListener('click', (e) => { if(e.target === productModalOverlay) closeProductModal(); });
+
+pfImg.addEventListener('input', () => {
+  const url = pfImg.value.trim();
+  pfImgPreview.innerHTML = url ? `<img src="${url}" alt="">` : placeholderThumbSvg;
+  const imgEl = pfImgPreview.querySelector('img');
+  if(imgEl) imgEl.addEventListener('error', () => { pfImgPreview.innerHTML = placeholderThumbSvg; }, { once: true });
+});
+
+productForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const saveBtn = document.getElementById('productSaveBtn');
+  saveBtn.disabled = true; const originalLabel = saveBtn.textContent; saveBtn.textContent = 'Saving…';
+  const payload = {
+    name: document.getElementById('pfName').value.trim(),
+    sku: document.getElementById('pfSku').value.trim(),
+    cat: document.getElementById('pfCat').value,
+    price: parseFloat(document.getElementById('pfPrice').value) || 0,
+    unit: document.getElementById('pfUnit').value.trim(),
+    qty: parseInt(document.getElementById('pfQty').value, 10) || 0,
+    lowStockThreshold: parseInt(document.getElementById('pfThreshold').value, 10) || 10,
+    img: pfImg.value.trim()
+  };
+  try{
+    if(editingProductId){
+      await db.collection('products').doc(editingProductId).update(payload);
+      showToast('Product updated.');
+    } else {
+      payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('products').add(payload);
+      showToast('Product added.');
+    }
+    closeProductModal();
+  } catch(err){
+    showToast('Could not save product: ' + err.message, 'error');
+  } finally {
+    saveBtn.disabled = false; saveBtn.textContent = originalLabel;
+  }
+});
+
+/* ============ GENERIC CONFIRM MODAL ============
+   Reused for: deleting a product, revoking admin access, cancelling
+   an invite — whatever needs a "are you sure?" step. */
+let confirmActionFn = null;
+const confirmModalOverlay = document.getElementById('confirmModalOverlay');
+function openConfirm(message, actionFn, btnLabel){
+  document.getElementById('confirmText').textContent = message;
+  document.getElementById('confirmDeleteBtn').textContent = btnLabel || 'Delete';
+  confirmActionFn = actionFn;
+  confirmModalOverlay.classList.add('show');
+}
+function closeConfirmModal(){ confirmModalOverlay.classList.remove('show'); confirmActionFn = null; }
+document.getElementById('confirmCancelBtn').addEventListener('click', closeConfirmModal);
+confirmModalOverlay.addEventListener('click', (e) => { if(e.target === confirmModalOverlay) closeConfirmModal(); });
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+  if(!confirmActionFn) return;
+  const btn = document.getElementById('confirmDeleteBtn');
+  btn.disabled = true; const originalLabel = btn.textContent; btn.textContent = 'Please wait…';
+  try{
+    await confirmActionFn();
+    closeConfirmModal();
+  } catch(err){
+    showToast('Something went wrong: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = originalLabel;
+  }
+});
+
+function openDeleteConfirm(id){
+  const p = allProducts.find(x => x.id === id);
+  openConfirm(
+    p ? `Delete "${p.name}"? This can't be undone and it will disappear from your live storefront immediately.` : `This action can't be undone.`,
+    async () => {
+      await db.collection('products').doc(id).delete();
+      showToast('Product deleted.');
+    },
+    'Delete'
+  );
+}
+
+/* ============ TEAM ACCESS (super admin only) ============
+   Invite by email — if that email already has an account, admin
+   access is granted instantly. If not, an invite is stored and
+   activates automatically the moment that email signs up or logs in. */
+let adminsUnsub = null;
+let invitesUnsub = null;
+
+function startTeamListeners(){
+  if(adminsUnsub) return;
+  adminsUnsub = db.collection('users').where('isAdmin', '==', true).onSnapshot(snap => {
+    renderAdminsList(snap.docs);
+  }, err => showToast('Could not load admins: ' + err.message, 'error'));
+  invitesUnsub = db.collection('adminInvites').onSnapshot(snap => {
+    renderInvitesList(snap.docs);
+  }, err => showToast('Could not load invites: ' + err.message, 'error'));
+}
+function stopTeamListeners(){
+  if(adminsUnsub){ adminsUnsub(); adminsUnsub = null; }
+  if(invitesUnsub){ invitesUnsub(); invitesUnsub = null; }
+}
+
+function renderAdminsList(docs){
+  const el = document.getElementById('adminsList');
+  if(docs.length === 0){
+    el.innerHTML = `<div class="empty-note">No admins yet.</div>`;
+    return;
+  }
+  el.innerHTML = docs.map(doc => {
+    const d = doc.data();
+    const name = d.name || d.authEmail || d.email || 'Unnamed';
+    const email = d.authEmail || d.email || '—';
+    const isSelf = auth.currentUser && doc.id === auth.currentUser.uid;
+    const superFlag = d.isSuperAdmin === true;
+    return `<div class="team-row">
+      <div class="team-avatar">${(name || 'A').trim().charAt(0).toUpperCase()}</div>
+      <div class="team-info">
+        <div class="team-name">${escapeHtml(name)}${superFlag ? ' <span class="badge badge-in" style="margin-left:6px;">Super Admin</span>' : ''}${isSelf ? ' <span class="badge" style="margin-left:6px;background:#eceeec;color:var(--grey);">You</span>' : ''}</div>
+        <div class="team-email">${escapeHtml(email)}</div>
+      </div>
+      ${(superFlag || isSelf) ? '' : `<button class="btn btn-danger btn-sm" data-revoke="${doc.id}" data-revoke-name="${escapeHtml(name)}">Revoke</button>`}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-revoke]').forEach(b => b.addEventListener('click', () => revokeAdmin(b.dataset.revoke, b.dataset.revokeName)));
+}
+
+function renderInvitesList(docs){
+  const el = document.getElementById('invitesList');
+  if(docs.length === 0){
+    el.innerHTML = `<div class="empty-note">No pending invites.</div>`;
+    return;
+  }
+  el.innerHTML = docs.map(doc => {
+    const d = doc.data();
+    return `<div class="team-row">
+      <div class="team-avatar" style="background:var(--amber-soft);color:var(--amber);">${(doc.id || '?').charAt(0).toUpperCase()}</div>
+      <div class="team-info">
+        <div class="team-name">${escapeHtml(doc.id)}</div>
+        <div class="team-email">Pending — invited by ${escapeHtml(d.invitedByName || 'admin')}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" data-cancel-invite="${doc.id}">Cancel</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-cancel-invite]').forEach(b => b.addEventListener('click', () => cancelInvite(b.dataset.cancelInvite)));
+}
+
+function revokeAdmin(uid, name){
+  openConfirm(
+    `Revoke admin access for ${name}? They'll lose access to this panel immediately.`,
+    async () => {
+      await db.collection('users').doc(uid).set({ isAdmin: false }, { merge: true });
+      showToast('Admin access revoked.');
+    },
+    'Revoke'
+  );
+}
+function cancelInvite(email){
+  openConfirm(
+    `Cancel the pending invite for ${email}?`,
+    async () => {
+      await db.collection('adminInvites').doc(email).delete();
+      showToast('Invite cancelled.');
+    },
+    'Cancel Invite'
+  );
+}
+
+document.getElementById('inviteForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('inviteSubmitBtn');
+  const emailInput = document.getElementById('inviteEmail');
+  const email = normalizeEmailKey(emailInput.value);
+  if(!email) return;
+  btn.disabled = true; const originalHtml = btn.innerHTML; btn.innerHTML = 'Sending…';
+  try{
+    const existing = await db.collection('users').where('authEmail', '==', email).limit(1).get();
+    if(!existing.empty){
+      const doc = existing.docs[0];
+      if(doc.data().isAdmin === true){
+        showToast('This person already has admin access.');
+      } else {
+        await doc.ref.set({ isAdmin: true }, { merge: true });
+        showToast(`Admin access granted to ${email}.`);
+      }
+    } else {
+      await db.collection('adminInvites').doc(email).set({
+        invitedBy: auth.currentUser.uid,
+        invitedByName: auth.currentUser.displayName || auth.currentUser.email || 'admin',
+        invitedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('Invite sent — access activates when they sign up or log in with this email.');
+    }
+    emailInput.value = '';
+  } catch(err){
+    showToast('Could not send invite: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = originalHtml;
+  }
+});
+</script>
+
+</body>
+</html>
