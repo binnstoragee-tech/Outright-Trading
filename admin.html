@@ -404,6 +404,134 @@
   @keyframes toastIn{from{opacity:0;transform:translateX(30px) scale(.95);}to{opacity:1;transform:translateX(0) scale(1);}}
   @keyframes toastOut{to{opacity:0;transform:translateX(30px) scale(.95);}}
   @media(max-width:480px){#toastHost{left:14px;right:14px;bottom:14px;}.toast{max-width:none;}}
+
+  /* =====================================================================
+     GLASS UI/UX OVERRIDE — frosted glass theme layered on top of the
+     admin panel, matching the glass treatment already used on the main
+     site (index.html). Sits at the end of the stylesheet so it wins the
+     cascade against the rules above without needing to touch them.
+     ===================================================================== */
+
+  html,body{background:var(--paper);}
+  body::before{
+    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(600px 500px at 92% 6%, rgba(63,107,82,.06), transparent 60%),
+      radial-gradient(500px 450px at 2% 65%, rgba(20,90,140,.04), transparent 60%);
+  }
+
+  /* ---- glass surface tokens (same values as index.html for consistency) ---- */
+  :root{
+    --glass-bg:rgba(255,255,255,.55);
+    --glass-bg-strong:rgba(255,255,255,.74);
+    --glass-border:rgba(255,255,255,.9);
+    --glass-blur:blur(20px);
+    --glass-shadow:0 8px 32px -14px rgba(20,22,20,.18);
+  }
+
+  /* ---- login screen: frosted dark-glass card over the green blobs ---- */
+  .login-card{
+    background:rgba(255,255,255,.14) !important;
+    backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);
+    border:1px solid rgba(255,255,255,.22);
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.5);
+  }
+  .login-brand p{color:rgba(255,255,255,.65);}
+  #loginScreen h1,#loginScreen .login-brand b{color:#fff;}
+  .field label{color:rgba(255,255,255,.65);}
+  .field input{
+    background:rgba(255,255,255,.1) !important;border:1.5px solid rgba(255,255,255,.22);color:#fff;
+  }
+  .field input::placeholder{color:rgba(255,255,255,.4);}
+  .field input:focus{background:rgba(255,255,255,.18) !important;border-color:#7bd9a5;}
+  .login-foot{color:rgba(255,255,255,.4);}
+  .btn-login{
+    background:rgba(255,255,255,.16) !important;backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.3) !important;color:#fff;
+  }
+  .btn-login:hover{background:rgba(255,255,255,.26) !important;}
+
+  /* ---- sidebar: dark frosted glass, keeps the brand green tint ---- */
+  .sidebar{
+    background:linear-gradient(165deg,rgba(28,43,34,.75) 0%,rgba(35,60,46,.7) 45%,rgba(44,77,59,.68) 100%) !important;
+    backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);
+    border-right:1px solid rgba(255,255,255,.1);
+  }
+  .sb-logo{background:rgba(255,255,255,.9) !important;}
+  .sb-collapse-btn{background:rgba(255,255,255,.1) !important;}
+  .sb-collapse-btn:hover{background:rgba(255,255,255,.18) !important;}
+  .sb-item:hover{background:rgba(255,255,255,.09) !important;}
+  .sb-item.active{background:rgba(255,255,255,.16) !important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12) !important;}
+  .sb-icon{background:rgba(255,255,255,.09) !important;}
+  .sb-item.active .sb-icon{background:rgba(123,217,165,.26) !important;}
+  .sb-admin-chip{background:rgba(255,255,255,.08) !important;}
+
+  /* ---- topbar: white glass, floats above the content ---- */
+  .topbar{
+    background:rgba(255,255,255,.62) !important;
+    backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+    border-bottom:1px solid rgba(255,255,255,.85);
+  }
+  .tb-hamburger{background:rgba(255,255,255,.7) !important;border-color:rgba(255,255,255,.9) !important;}
+  .tb-date{background:rgba(255,255,255,.65) !important;border-color:rgba(255,255,255,.9) !important;}
+
+  /* ---- stat cards, panels, inventory table/cards: frosted glass ---- */
+  .stat-card,.panel,.inv-table-wrap,.inv-card{
+    background:var(--glass-bg-strong) !important;
+    backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+    border:1px solid rgba(255,255,255,.9) !important;
+    box-shadow:var(--glass-shadow) !important;
+  }
+  .stat-card:hover{box-shadow:0 18px 40px -18px rgba(20,22,20,.24) !important;}
+  .inv-table thead th{background:rgba(255,255,255,.35) !important;}
+  .inv-table tbody tr:hover{background:rgba(255,255,255,.35);}
+  .low-thumb,.inv-thumb{background:rgba(255,255,255,.5) !important;}
+
+  /* ---- toolbar: search / category filter as glass pills ---- */
+  .inv-search{
+    background:rgba(255,255,255,.55) !important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.9) !important;
+  }
+  .inv-search:focus-within{background:rgba(255,255,255,.85) !important;}
+  .inv-cat-select{
+    background:rgba(255,255,255,.55) !important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.9) !important;
+  }
+
+  /* ---- buttons: glass pills, same treatment as the main site ---- */
+  .btn-primary{
+    background:linear-gradient(135deg,var(--ink),#000) !important;
+    border:1px solid rgba(255,255,255,.3) !important;
+    box-shadow:0 12px 26px -10px rgba(20,22,20,.5);
+  }
+  .btn-primary:hover{background:linear-gradient(135deg,#3a3b41,var(--ink)) !important;}
+  .btn-ghost{
+    background:rgba(255,255,255,.55) !important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-color:rgba(255,255,255,.9) !important;
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,.85) !important;}
+
+  /* ---- modal: frosted white glass card ---- */
+  .modal-box{
+    background:rgba(255,255,255,.78) !important;
+    backdrop-filter:blur(30px) saturate(1.4);-webkit-backdrop-filter:blur(30px) saturate(1.4);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 40px 90px -20px rgba(0,0,0,.35);
+  }
+  .modal-close{background:rgba(255,255,255,.6) !important;}
+  .form-field input,.form-field select{
+    background:rgba(255,255,255,.55) !important;border-color:rgba(255,255,255,.9) !important;
+  }
+  .form-field input:focus,.form-field select:focus{background:rgba(255,255,255,.9) !important;}
+  .img-preview{background:rgba(255,255,255,.45) !important;}
+
+  /* ---- toast: dark frosted glass ---- */
+  .toast{
+    background:rgba(30,42,34,.75) !important;
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.14);
+  }
+  .toast.error{background:rgba(168,67,47,.82) !important;}
 </style>
 </head>
 <body>
@@ -970,20 +1098,55 @@ function stopProductsListener(){
 
 /* ============ SEED / STARTER CATALOGUE ============ */
 const SEED_PRODUCTS = [
-  { name:"Sparkling Cola 24-Pack", sku:"BEV-1024", cat:"Beverages", price:210, unit:"/ carton", qty:40 },
-  { name:"Bottled Water 500ml (Case)", sku:"BEV-1032", cat:"Beverages", price:95, unit:"/ carton", qty:55 },
-  { name:"Instant Coffee 200g Tin", sku:"BEV-1041", cat:"Beverages", price:340, unit:"/ case", qty:8 },
-  { name:"Potato Chips Family Pack", sku:"SNK-2010", cat:"Snacks", price:180, unit:"/ carton", qty:35 },
-  { name:"Assorted Biscuits Tray", sku:"SNK-2023", cat:"Snacks", price:145, unit:"/ tray", qty:30 },
-  { name:"Chocolate Bar Display Box", sku:"SNK-2044", cat:"Snacks", price:260, unit:"/ box", qty:25 },
-  { name:"Dish Soap 1L (Case of 12)", sku:"HHD-3011", cat:"Household", price:220, unit:"/ case", qty:20 },
-  { name:"Laundry Detergent 3kg", sku:"HHD-3028", cat:"Household", price:410, unit:"/ case", qty:6 },
-  { name:"Paper Towels 6-Roll Pack", sku:"HHD-3035", cat:"Household", price:165, unit:"/ carton", qty:28 },
-  { name:"Toothpaste 100ml (Case)", sku:"PCR-4012", cat:"Personal Care", price:195, unit:"/ case", qty:22 },
-  { name:"Bar Soap Multipack", sku:"PCR-4026", cat:"Personal Care", price:130, unit:"/ carton", qty:18 },
-  { name:"Frozen Chicken Nuggets 1kg", sku:"FRZ-5014", cat:"Frozen & Dairy", price:88, unit:"/ unit", qty:33 },
-  { name:"UHT Milk 1L (Case of 12)", sku:"FRZ-5022", cat:"Frozen & Dairy", price:250, unit:"/ case", qty:7 },
-  { name:"Butter Blocks 500g (Case)", sku:"FRZ-5031", cat:"Frozen & Dairy", price:300, unit:"/ case", qty:16 },
+  { name:"Mr. Brown Vanilla Coffee", sku:"BEV-1001", cat:"Beverages", price:270, unit:"/ case", qty:25 },
+  { name:"Mr. Brown Cappuccino Coffee", sku:"BEV-1002", cat:"Beverages", price:270, unit:"/ case", qty:25 },
+  { name:"Mr. Brown Blue Mountain Blend Coffee", sku:"BEV-1003", cat:"Beverages", price:270, unit:"/ case", qty:25 },
+  { name:"Mr. Brown Caramel Latte Coffee", sku:"BEV-1004", cat:"Beverages", price:270, unit:"/ case", qty:25 },
+  { name:"Mr. Brown Iced Coffee", sku:"BEV-1005", cat:"Beverages", price:270, unit:"/ case", qty:25 },
+  { name:"Mr. Brown Black Coffee", sku:"BEV-1006", cat:"Beverages", price:270, unit:"/ case", qty:25 },
+  { name:"Mr. Brown Macadamia Nut Coffee", sku:"BEV-1007", cat:"Beverages", price:270, unit:"/ case", qty:25 },
+  { name:"Coca-Cola Can", sku:"BEV-1008", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Sprite Can", sku:"BEV-1009", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Fanta Orange Can", sku:"BEV-1010", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Fanta Strawberry Can", sku:"BEV-1011", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Schweppes Bitter Lemon", sku:"BEV-1012", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Schweppes Soda Water", sku:"BEV-1013", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Schweppes Tonic Water", sku:"BEV-1014", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Diet Coke Can", sku:"BEV-1015", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Coke Zero Can", sku:"BEV-1016", cat:"Beverages", price:260, unit:"/ case", qty:25 },
+  { name:"Lipton Ice Tea Can", sku:"BEV-1017", cat:"Beverages", price:290, unit:"/ case", qty:25 },
+  { name:"F&N Ice Cream Soda", sku:"BEV-1018", cat:"Beverages", price:165, unit:"/ case", qty:25 },
+  { name:"F&N Strawberry", sku:"BEV-1019", cat:"Beverages", price:165, unit:"/ case", qty:25 },
+  { name:"F&N Grape", sku:"BEV-1020", cat:"Beverages", price:165, unit:"/ case", qty:25 },
+  { name:"F&N Orange", sku:"BEV-1021", cat:"Beverages", price:165, unit:"/ case", qty:25 },
+  { name:"F&N Zappel Can", sku:"BEV-1022", cat:"Beverages", price:165, unit:"/ case", qty:25 },
+  { name:"XL Energy Drink", sku:"BEV-1023", cat:"Beverages", price:410, unit:"/ case", qty:25 },
+  { name:"100Plus Original", sku:"BEV-1024", cat:"Beverages", price:320, unit:"/ case", qty:25 },
+  { name:"100Plus Lemon Lime", sku:"BEV-1025", cat:"Beverages", price:320, unit:"/ case", qty:25 },
+  { name:"Sagiko Soursop Juice Drink", sku:"BEV-1026", cat:"Beverages", price:245, unit:"/ case", qty:25 },
+  { name:"Sagiko Mix Fruit Juice Drink", sku:"BEV-1027", cat:"Beverages", price:245, unit:"/ case", qty:25 },
+  { name:"Sagiko Tamarind Juice Drink", sku:"BEV-1028", cat:"Beverages", price:245, unit:"/ case", qty:25 },
+  { name:"Sagiko Mango Juice Drink", sku:"BEV-1029", cat:"Beverages", price:245, unit:"/ case", qty:25 },
+  { name:"Sagiko Pomegranate Juice Drink", sku:"BEV-1030", cat:"Beverages", price:245, unit:"/ case", qty:25 },
+  { name:"Sagiko Pink Guava Juice Drink", sku:"BEV-1031", cat:"Beverages", price:245, unit:"/ case", qty:25 },
+  { name:"Starjus Mango Cordial", sku:"BEV-1032", cat:"Beverages", price:440, unit:"/ case", qty:25 },
+  { name:"Starjus Lychee Cordial", sku:"BEV-1033", cat:"Beverages", price:440, unit:"/ case", qty:25 },
+  { name:"Starjus Blackcurrant Cordial", sku:"BEV-1034", cat:"Beverages", price:440, unit:"/ case", qty:25 },
+  { name:"Starjus Orange Cordial", sku:"BEV-1035", cat:"Beverages", price:440, unit:"/ case", qty:25 },
+  { name:"Starjus Rose Cordial", sku:"BEV-1036", cat:"Beverages", price:440, unit:"/ case", qty:25 },
+  { name:"Starjus Blueberry Cordial", sku:"BEV-1037", cat:"Beverages", price:440, unit:"/ case", qty:25 },
+  { name:"Fanta Strawberry Pet Bottle", sku:"BEV-1038", cat:"Beverages", price:285, unit:"/ case", qty:25 },
+  { name:"Coca-Cola Pet Bottle", sku:"BEV-1039", cat:"Beverages", price:285, unit:"/ case", qty:25 },
+  { name:"Sprite Pet Bottle", sku:"BEV-1040", cat:"Beverages", price:285, unit:"/ case", qty:25 },
+  { name:"Fanta Orange Pet Bottle", sku:"BEV-1041", cat:"Beverages", price:285, unit:"/ case", qty:25 },
+  { name:"Coca-Cola 1.25L Bottle", sku:"BEV-1042", cat:"Beverages", price:310, unit:"/ case", qty:25 },
+  { name:"Fanta Strawberry 1.25L Bottle", sku:"BEV-1043", cat:"Beverages", price:310, unit:"/ case", qty:25 },
+  { name:"Sprite 1.25L Bottle", sku:"BEV-1044", cat:"Beverages", price:310, unit:"/ case", qty:25 },
+  { name:"Fanta Orange 1.25L Bottle", sku:"BEV-1045", cat:"Beverages", price:310, unit:"/ case", qty:25 },
+  { name:"Indomilk Kids 115ml", sku:"BEV-1046", cat:"Beverages", price:180, unit:"/ case", qty:25 },
+  { name:"Indomilk Chocolate 180ml", sku:"BEV-1047", cat:"Beverages", price:195, unit:"/ case", qty:25 },
+  { name:"Indomilk Strawberry 180ml", sku:"BEV-1048", cat:"Beverages", price:195, unit:"/ case", qty:25 },
+  { name:"Indomilk Vanilla 180ml", sku:"BEV-1049", cat:"Beverages", price:195, unit:"/ case", qty:25 },
 ];
 document.getElementById('seedBtn').addEventListener('click', async () => {
   const btn = document.getElementById('seedBtn');

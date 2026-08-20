@@ -17,8 +17,8 @@
     --grey:#6e6e76;
     --grey-light:#9a9aa1;
     --line:#d5d7d3;
-    --green:#3f6b52;
-    --green-deep:#2c4d3b;
+    --green:#4a4b52;
+    --green-deep:#1a1b1e;
     --rust:#a8432f;
     --card-bg:#ffffff;
   }
@@ -87,6 +87,14 @@
     font-family:'Inter';font-size:13.5px;color:var(--ink);width:100%;
   }
   .navsearch input::placeholder{color:var(--grey-light);}
+  .navsearch-close{
+    display:none;flex-shrink:0;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;border:none;
+    background:var(--paper);color:var(--grey);cursor:pointer;padding:0;
+    transition:background .2s,color .2s;
+  }
+  .navsearch-close:hover{background:var(--line);color:var(--ink);}
+  #searchInput:not(:placeholder-shown) ~ .navsearch-close{display:flex;}
   .search-suggestions{
     position:absolute;top:calc(100% + 10px);left:0;right:0;
     background:#fff;border:1px solid var(--line);border-radius:16px;
@@ -104,7 +112,7 @@
   .suggestion-name mark{background:rgba(63,107,82,.18);color:var(--green-deep);border-radius:3px;padding:0 1px;}
   .suggestion-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
   .suggestion-cat{font-family:'IBM Plex Mono';font-size:9.5px;color:var(--grey-light);text-transform:uppercase;letter-spacing:.06em;}
-  .suggestion-price{font-family:'IBM Plex Mono';font-size:11px;color:var(--green-deep);font-weight:500;}
+  .suggestion-price{font-family:'IBM Plex Mono';font-size:11px;color:var(--green-deep);font-weight:500;white-space:nowrap;}
   .suggestion-empty{padding:16px 12px;font-size:13px;color:var(--grey);text-align:center;}
   .navicons{display:flex;align-items:center;gap:10px;margin-left:32px;}
   .icon-btn{
@@ -262,44 +270,110 @@
 
   .cat-trigger{
     display:flex;align-items:center;gap:8px;
-    background:none;border:1px solid var(--line);border-radius:999px;
-    padding:8px 16px;font-family:'Inter';font-size:13.5px;font-weight:500;
+    background:rgba(255,255,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.9);border-radius:999px;
+    padding:8px 16px;font-family:'Inter';font-size:13.5px;font-weight:600;
     color:var(--ink);cursor:pointer;
-    transition:border-color .2s,background .2s,transform .2s;
+    box-shadow:0 8px 20px -12px rgba(20,22,20,.18);
+    transition:border-color .2s,background .2s,transform .2s,box-shadow .2s;
   }
   .cat-trigger svg{width:16px;height:16px;color:var(--green-deep);}
-  .cat-trigger:hover{border-color:var(--green-deep);background:rgba(63,107,82,.06);}
+  .cat-trigger:hover{background:rgba(255,255,255,.85);box-shadow:0 10px 24px -12px rgba(20,22,20,.24);}
   .cat-trigger:active{transform:scale(.96);}
+  .head-trigger-group{display:flex;align-items:center;gap:10px;}
+  .offers-trigger svg{color:var(--rust);}
+
+  .products-title-row{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin:20px 2px 18px;
+  }
+  .products-title-row h3{font-size:22px;font-weight:800;letter-spacing:-.01em;}
+  .products-title-row span{font-family:'IBM Plex Mono';font-size:12.5px;color:var(--grey-light);}
+
+  /* ===== NAV OFFERS LINK (desktop header) ===== */
+  .nav-offers-link{
+    display:flex;align-items:center;gap:7px;flex-shrink:0;
+    font-family:'Inter';font-size:13.5px;font-weight:700;
+    color:var(--ink);padding:9px 15px;border-radius:999px;
+    background:rgba(168,67,47,.07);border:1px solid rgba(168,67,47,.16);
+    transition:background .2s,border-color .2s,transform .2s;
+  }
+  .nav-offers-link svg{width:15px;height:15px;color:var(--rust);}
+  .nav-offers-link:hover{background:rgba(168,67,47,.13);border-color:rgba(168,67,47,.3);transform:translateY(-1px);}
+  .nav-offers-link:active{transform:translateY(0) scale(.97);}
+  @media(max-width:900px){ .nav-offers-link{display:none;} }
+
+  /* ===== iOS-STYLE GLASS NOTIFICATION TOAST ===== */
+  .ios-toast{
+    position:fixed;top:14px;left:50%;z-index:3000;
+    width:min(380px,calc(100% - 24px));
+    display:flex;align-items:flex-start;gap:12px;
+    padding:13px 15px;border-radius:18px;
+    background:rgba(255,255,255,.72);
+    backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6);
+    border:1px solid rgba(255,255,255,.7);
+    box-shadow:0 20px 45px -14px rgba(20,22,20,.32),0 2px 6px rgba(20,22,20,.06);
+    cursor:pointer;
+    transform:translate(-50%,-130%) scale(.94);
+    opacity:0;pointer-events:none;
+    transition:transform .55s cubic-bezier(.34,1.35,.42,1),opacity .3s ease;
+  }
+  .ios-toast.show{
+    transform:translate(-50%,0) scale(1);
+    opacity:1;pointer-events:auto;
+  }
+  .ios-toast-icon{
+    flex-shrink:0;width:34px;height:34px;border-radius:10px;
+    background:rgba(168,67,47,.12);color:var(--rust);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ios-toast-icon svg{width:18px;height:18px;}
+  .ios-toast-text{min-width:0;}
+  .ios-toast-title{font-family:'Inter';font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:.01em;}
+  .ios-toast-sub{font-family:'Inter';font-size:12.5px;color:var(--grey);line-height:1.4;margin-top:2px;}
+  @media(max-width:640px){
+    .ios-toast{top:10px;}
+  }
 
   /* ===== CATEGORY SIDEBAR (persistent, homepage catalogue) ===== */
   .products-layout{display:flex;gap:32px;align-items:flex-start;}
   .products-main{flex:1;min-width:0;}
   .cat-sidebar{
-    display:none;width:230px;flex-shrink:0;
-    border:1px solid var(--line);border-radius:16px;
-    padding:8px;background:var(--card-bg);
+    display:none;width:300px;flex-shrink:0;
+    border:none;border-radius:22px;
+    padding:8px 6px;background:var(--card-bg);
+    box-shadow:0 1px 2px rgba(20,22,20,.04),0 18px 40px -22px rgba(20,22,20,.16);
     position:sticky;top:110px;bottom:20px;
+    isolation:isolate;
   }
   .cat-sidebar-title{
-    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--grey);padding:14px 16px 10px;
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--grey-light);padding:22px 20px 16px;
+  }
+  /* sliding indicator that glides to whichever category is active */
+  .cat-side-indicator{
+    position:absolute;left:6px;right:6px;top:0;height:0;
+    border-radius:13px;background:rgba(63,107,82,.08);
+    transition:transform .55s cubic-bezier(.16,1,.3,1),height .35s cubic-bezier(.16,1,.3,1),opacity .3s;
+    pointer-events:none;z-index:0;opacity:0;
   }
   .cat-side-item{
-    display:flex;align-items:center;gap:12px;
+    position:relative;z-index:1;
+    display:flex;align-items:center;gap:13px;
     width:100%;text-align:left;background:none;border:none;
-    padding:13px 14px;border-radius:10px;cursor:pointer;
-    font-family:'Inter';font-size:13.5px;font-weight:600;letter-spacing:.02em;
+    padding:14px 20px;border-radius:13px;cursor:pointer;
+    font-family:'Inter';font-size:14.5px;font-weight:700;letter-spacing:.03em;
     color:var(--ink);text-transform:uppercase;
-    transition:background .2s,color .2s;
+    transition:color .25s;
   }
   .cat-side-item .dot{
     width:6px;height:6px;border-radius:50%;background:var(--line);flex-shrink:0;
-    transition:background .2s,transform .2s;
+    transition:background .3s,transform .4s cubic-bezier(.34,1.56,.64,1);
   }
-  .cat-side-item:hover{background:rgba(63,107,82,.07);color:var(--green-deep);}
-  .cat-side-item:hover .dot{background:var(--green-deep);transform:scale(1.3);}
-  .cat-side-item.active{background:var(--ink);color:#fff;}
-  .cat-side-item.active .dot{background:var(--green);transform:scale(1.3);}
+  .cat-side-item:hover{color:var(--green-deep);}
+  .cat-side-item:hover .dot{background:var(--green-deep);transform:scale(1.4);}
+  .cat-side-item.active{color:var(--green-deep);font-weight:800;}
+  .cat-side-item.active .dot{background:var(--green-deep);transform:scale(1.55);box-shadow:0 0 0 4px rgba(63,107,82,.14);}
 
   @media(min-width:900px){
     .cat-sidebar{display:block;}
@@ -364,10 +438,11 @@
     width:6px;height:6px;border-radius:50%;background:var(--line);flex-shrink:0;
     transition:background .2s,transform .2s;
   }
+  .cat-drawer-item .dot{transition:background .3s,transform .4s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;}
   .cat-drawer-item:hover{background:rgba(63,107,82,.07);color:var(--green-deep);}
-  .cat-drawer-item:hover .dot{background:var(--green-deep);transform:scale(1.3);}
-  .cat-drawer-item.active{background:var(--ink);color:#fff;}
-  .cat-drawer-item.active .dot{background:var(--green);transform:scale(1.3);}
+  .cat-drawer-item:hover .dot{background:var(--green-deep);transform:scale(1.4);}
+  .cat-drawer-item.active{background:rgba(63,107,82,.08);color:var(--green-deep);font-weight:800;}
+  .cat-drawer-item.active .dot{background:var(--green-deep);transform:scale(1.55);box-shadow:0 0 0 4px rgba(63,107,82,.14);}
 
   /* ===== CART DRAWER ===== */
   .cart-overlay{
@@ -432,7 +507,7 @@
   }
   .cart-item-qty button:hover{background:var(--paper);}
   .cart-item-qty span{font-family:'IBM Plex Mono';font-size:12px;min-width:20px;text-align:center;}
-  .cart-item-price{font-family:'IBM Plex Mono';font-size:12.5px;font-weight:500;color:var(--green-deep);}
+  .cart-item-price{font-family:'IBM Plex Mono';font-size:12.5px;font-weight:500;color:var(--green-deep);white-space:nowrap;}
   .cart-item-remove{
     background:none;border:none;cursor:pointer;color:var(--grey-light);
     padding:4px;display:flex;align-items:center;justify-content:center;
@@ -453,7 +528,7 @@
     display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;
   }
   .cart-subtotal-row span:first-child{font-family:'Inter';font-size:13.5px;color:var(--grey);}
-  .cart-subtotal-row span:last-child{font-family:'Space Grotesk';font-size:20px;font-weight:700;color:var(--ink);}
+  .cart-subtotal-row span:last-child{font-family:'Space Grotesk';font-size:20px;font-weight:700;color:var(--ink);white-space:nowrap;}
   .cart-checkout-btn{
     width:100%;background:var(--green-deep);color:#fff;border:none;border-radius:999px;
     padding:15px 0;font-family:'Inter';font-size:14px;font-weight:600;cursor:pointer;
@@ -465,12 +540,7 @@
   .cart-checkout-btn:active{transform:scale(.98);}
   .cart-checkout-btn svg{width:16px;height:16px;flex-shrink:0;}
 
-  /* ===== HERO — now just the banner carousel (same style on mobile and desktop) ===== */
-  .hero{
-    position:relative;
-    padding:100px 0 0;
-    margin-top:28px;
-  }
+  /* ===== HERO — banner now lives inside #products, next to the sidebar ===== */
   .btn{
     padding:14px 26px;border-radius:2px;font-size:14px;font-weight:600;
     display:inline-flex;align-items:center;gap:8px;transition:all .15s;
@@ -485,76 +555,105 @@
   }
   .btn-ghost:hover{border-color:#fff;background:rgba(20,22,20,.4);}
 
-  /* ===== BANNER CAROUSEL (mobile) — simple flat slide carousel with dots/arrows ===== */
-  .mbanner{
-    position:relative;margin:0 0 40px;
-    border-radius:20px;overflow:hidden;background:var(--paper-raised);
-    border:1px solid var(--line);
+  /* ===== HERO SLIDER — full-bleed banner with left-aligned overlay
+     text + CTA button + dot indicators (Mazi-style) ===== */
+  .ghero{
+    position:relative;
+    height:400px;
+    overflow:hidden;
+    margin-bottom:40px;
+    background:var(--ink);
+    border-radius:20px;
   }
-  .mbanner-viewport{width:100%;aspect-ratio:5/1;overflow:hidden;}
-  .mbanner-track{display:flex;height:100%;transition:transform .5s cubic-bezier(.22,1,.36,1);}
-  .mbanner-slide{flex:0 0 100%;height:100%;position:relative;cursor:pointer;}
-  .mbanner-slide img{width:100%;height:100%;object-fit:cover;}
-  .mbanner-label{
-    position:absolute;left:18px;bottom:16px;
-    background:rgba(20,22,20,.55);color:#fff;backdrop-filter:blur(6px);
-    font-family:'Space Grotesk';font-size:14px;font-weight:600;
-    padding:7px 15px;border-radius:999px;
+  .ghero-bg{position:absolute;inset:0;}
+  .ghero-bg-slide{
+    position:absolute;inset:0;
+    background-size:cover;background-position:center;
+    opacity:0;transform:scale(1.045);
+    transition:opacity 1.05s cubic-bezier(.22,1,.36,1),transform 6s linear;
   }
-  .mbanner-arrow{
-    position:absolute;top:50%;transform:translateY(-50%);
-    width:36px;height:36px;border-radius:50%;border:none;
+  .ghero-bg-slide.active{opacity:1;transform:scale(1);}
+  .ghero-overlay{
+    display:none;
+  }
+  .ghero-text{
+    display:none;
+  }
+  .ghero-eyebrow{
+    font-family:'IBM Plex Mono';font-size:11.5px;font-weight:500;
+    letter-spacing:.16em;text-transform:uppercase;color:#cfd6cf;
+    margin-bottom:14px;opacity:0;transform:translateY(8px);
+    transition:opacity .5s ease .1s,transform .5s ease .1s;
+  }
+  .ghero-title{
+    font-size:clamp(30px,4vw,46px);font-weight:700;line-height:1.12;
+    letter-spacing:-0.02em;margin-bottom:16px;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .55s ease .16s,transform .55s ease .16s;
+  }
+  .ghero-sub{
+    font-size:15px;line-height:1.6;color:rgba(255,255,255,.82);
+    max-width:440px;margin-bottom:26px;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .55s ease .22s,transform .55s ease .22s;
+  }
+  .ghero-cta{
+    align-self:flex-start;
     background:rgba(255,255,255,.92);color:var(--ink);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;
-    box-shadow:0 4px 12px rgba(20,22,20,.2);
+    border:none;border-radius:999px;
+    padding:13px 28px;font-family:'Inter';font-size:14px;font-weight:700;
+    cursor:pointer;transition:background .2s,transform .15s;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .55s ease .28s,transform .55s ease .28s,background .2s;
   }
-  .mbanner-arrow svg{width:16px;height:16px;}
-  .mbanner-arrow.prev{left:14px;}
-  .mbanner-arrow.next{right:14px;}
-  .mbanner-dots{
-    position:absolute;left:0;right:0;bottom:12px;
-    display:flex;justify-content:center;gap:6px;
-  }
-  .mbanner-dots span{
-    width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.55);
-    transition:background .2s,transform .2s;cursor:pointer;
-  }
-  .mbanner-dots span.active{background:#fff;transform:scale(1.3);}
-  .mbanner{display:none;}
+  .ghero-cta:hover{background:#fff;}
+  .ghero-cta:active{transform:scale(.96);}
+  .ghero-text.in .ghero-eyebrow,
+  .ghero-text.in .ghero-title,
+  .ghero-text.in .ghero-sub,
+  .ghero-text.in .ghero-cta{opacity:1;transform:translateY(0);}
 
-  /* ===== BANNER CAROUSEL — flat, equal-size, 3 slides visible at once
-     (same look/format on mobile + desktop, like a standard shop banner row) ===== */
-  .mbanner3d{
-    display:flex;align-items:center;gap:10px;
-    position:relative;margin:0 0 24px;
+  .ghero-dots{
+    position:absolute;left:0;right:0;bottom:20px;z-index:2;
+    display:flex;align-items:center;justify-content:center;gap:8px;
   }
-  .mbanner3d-viewport{
-    flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;
-    scroll-snap-type:x mandatory;scroll-behavior:smooth;
-    -ms-overflow-style:none;scrollbar-width:none;
+  .ghero-dot{
+    width:8px;height:8px;border-radius:999px;
+    background:rgba(255,255,255,.45);border:none;padding:0;cursor:pointer;
+    transition:width .3s cubic-bezier(.22,1,.36,1),background .3s;
   }
-  .mbanner3d-viewport::-webkit-scrollbar{display:none;}
-  .mbanner3d-track{display:flex;gap:14px;}
-  .mbanner3d-slide{
-    flex:0 0 calc((100% - 28px)/3);
-    scroll-snap-align:start;
-    aspect-ratio:16/9;
-    border-radius:14px;overflow:hidden;cursor:pointer;
-    border:1px solid var(--line);
-    transition:transform .15s;
+  .ghero-dot:hover{background:rgba(255,255,255,.75);}
+  .ghero-dot.active{width:26px;background:#fff;}
+
+  /* ===== OUR BRANDS — infinite looping logo marquee (draggable/swipeable;
+     JS drives the transform so a swipe can override it, then the auto
+     loop picks back up right where the swipe left off) ===== */
+  .brands-strip{margin-bottom:44px;}
+  .brands-tag{
+    display:block;text-align:center;
+    font-family:'IBM Plex Mono';font-size:11.5px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--grey);
+    margin-bottom:22px;
   }
-  .mbanner3d-slide:hover{transform:translateY(-2px);}
-  .mbanner3d-slide img{width:100%;height:100%;object-fit:cover;display:block;}
-  .mbanner3d-arrow{
-    flex:0 0 auto;position:static;transform:none;
-    width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
-    background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;
-    cursor:pointer;box-shadow:0 4px 12px -6px rgba(20,22,20,.25);
-    transition:border-color .2s,color .2s,transform .15s;
+  .brands-track-wrap{
+    position:relative;overflow:hidden;
+    touch-action:pan-y;cursor:grab;
+    -webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
+    mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
   }
-  .mbanner3d-arrow:hover{border-color:var(--green-deep);color:var(--green-deep);}
-  .mbanner3d-arrow:active{transform:scale(.92);}
-  .mbanner3d-arrow svg{width:15px;height:15px;}
+  .brands-track-wrap.dragging{cursor:grabbing;}
+  .brands-track{
+    display:flex;align-items:center;width:max-content;
+    will-change:transform;
+  }
+  .brands-track img{
+    height:152px;width:auto;object-fit:contain;flex-shrink:0;
+    margin:0 clamp(24px,4vw,48px);
+    -webkit-user-drag:none;user-select:none;pointer-events:none;
+  }
+  @media(max-width:640px){
+    .brands-track img{height:120px;margin:0 22px;}
+  }
 
   @keyframes pulseDot{
     0%,100%{opacity:1;transform:scale(1);}
@@ -563,7 +662,7 @@
 
   /* ===== SECTION HEADERS ===== */
   .section{padding:88px 0;}
-  #products{padding-top:24px;}
+  #products{padding-top:140px;padding-bottom:88px;}
   .section-head{
     display:flex;justify-content:space-between;align-items:flex-end;
     margin-bottom:44px;gap:24px;flex-wrap:wrap;
@@ -594,18 +693,12 @@
   .card:hover{transform:translateY(-4px);box-shadow:0 16px 32px -18px rgba(37,38,43,.28);border-color:var(--grey-light);}
   .card-media{
     aspect-ratio:1/1;width:100%;position:relative;
-    background:
-      linear-gradient(135deg, #f1f2ef 25%, transparent 25%) -10px 0,
-      linear-gradient(225deg, #f1f2ef 25%, transparent 25%) -10px 0,
-      linear-gradient(315deg, #f1f2ef 25%, transparent 25%),
-      linear-gradient(45deg, #f1f2ef 25%, transparent 25%);
-    background-size:20px 20px;
-    background-color:#fafaf9;
+    background:#ffffff;
     display:flex;align-items:center;justify-content:center;
     overflow:hidden;
   }
   .card-media img{
-    width:100%;height:100%;object-fit:cover;
+    width:100%;height:100%;object-fit:contain;
     position:absolute;inset:0;
   }
   .placeholder-mark{
@@ -622,14 +715,26 @@
   .stock-flag.low{background:var(--rust);}
   .card-body{padding:16px 16px 18px;}
   .card-cat{
-    font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--green-deep);margin-bottom:6px;display:block;
+    font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;
+    color:var(--green-deep);
   }
+  .card-cat::before{
+    content:'';width:6px;height:6px;border-radius:50%;background:currentColor;
+    animation:pulseDot 1.5s ease-in-out infinite;
+  }
+  .card-cat.low{color:var(--rust);}
+  .card-cat.out{color:var(--grey);}
   .card-title{font-size:14.5px;font-weight:600;margin-bottom:4px;line-height:1.3;}
   .card-sku{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--grey-light);margin-bottom:12px;}
   .card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  .card-price{font-family:'IBM Plex Mono';font-size:15px;font-weight:500;}
+  .card-price{font-family:'IBM Plex Mono';font-size:15px;font-weight:500;white-space:nowrap;}
   .card-price .unit{font-size:10px;color:var(--grey-light);font-family:'Inter';}
+  .mvr-icon{
+    height:.85em;width:auto;max-width:1.4em;
+    display:inline-block;vertical-align:middle;
+    margin-right:.28em;object-fit:contain;
+  }
   .card{cursor:pointer;}
 
   .card-add-btn{
@@ -677,51 +782,41 @@
     transition:opacity .3s ease,visibility .3s;
   }
   .pm-overlay.open{opacity:1;visibility:visible;}
-  .pm-box{
-    background:#fff;width:min(900px,100%);max-height:88vh;overflow-y:auto;
-    display:flex;flex-direction:column;
-    box-shadow:0 30px 70px -20px rgba(20,22,20,.4);
+  .pm-dialog{
+    position:relative;width:min(900px,100%);max-height:88vh;
     transform:scale(.94) translateY(14px);opacity:0;
     transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s;
   }
-  .pm-overlay.open .pm-box{transform:scale(1) translateY(0);opacity:1;}
-  .pm-scroll-bar{
-    position:sticky;top:0;left:0;right:0;z-index:20;
-    height:0;overflow:visible;
-    display:flex;justify-content:flex-end;
-    padding:0 20px;
-    pointer-events:none;
+  .pm-overlay.open .pm-dialog{transform:scale(1) translateY(0);opacity:1;}
+  .pm-box{
+    background:#fff;width:100%;max-height:88vh;overflow-y:auto;
+    display:flex;flex-direction:column;
+    box-shadow:0 30px 70px -20px rgba(20,22,20,.4);
   }
-  .pm-scroll-close{
-    margin-top:16px;
-    display:flex;align-items:center;gap:7px;
-    background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:999px;
-    padding:9px 16px 9px 12px;font-family:'Inter';font-size:12.5px;font-weight:600;
-    cursor:pointer;box-shadow:0 10px 26px -10px rgba(20,22,20,.35);
-    opacity:1;transform:translateY(0) scale(1);
-    transition:opacity .25s ease,transform .25s cubic-bezier(.22,1,.36,1),background .2s,color .2s,border-color .2s;
-    pointer-events:auto;
+  .pm-close-x{
+    position:absolute;top:-14px;right:-14px;z-index:30;
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;color:var(--ink);border:1px solid var(--line);
+    box-shadow:0 10px 26px -10px rgba(20,22,20,.35);
+    cursor:pointer;
+    transition:background .2s,color .2s,border-color .2s,transform .2s cubic-bezier(.22,1,.36,1);
   }
-  .pm-scroll-bar.visible .pm-scroll-close{
-    opacity:1;transform:translateY(0) scale(1);pointer-events:auto;
+  .pm-close-x svg{width:15px;height:15px;transition:transform .3s cubic-bezier(.22,1,.36,1);}
+  .pm-close-x:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .pm-close-x:hover svg{transform:rotate(90deg);}
+  .pm-close-x:active{transform:scale(.92);}
+  @media(max-width:640px){
+    .pm-close-x{top:8px;right:8px;}
   }
-  .pm-scroll-close svg{width:14px;height:14px;transition:transform .3s cubic-bezier(.22,1,.36,1);}
-  .pm-scroll-close:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
-  .pm-scroll-close:hover svg{transform:rotate(90deg);}
-  .pm-scroll-close:active{transform:scale(.95);}
   .pm-top{display:grid;grid-template-columns:1fr 1.1fr;flex-shrink:0;}
   .pm-media{
     position:relative;aspect-ratio:1/1;
-    background:
-      linear-gradient(135deg, #f1f2ef 25%, transparent 25%) -10px 0,
-      linear-gradient(225deg, #f1f2ef 25%, transparent 25%) -10px 0,
-      linear-gradient(315deg, #f1f2ef 25%, transparent 25%),
-      linear-gradient(45deg, #f1f2ef 25%, transparent 25%);
-    background-size:20px 20px;background-color:#fafaf9;
+    background:#ffffff;
     display:flex;align-items:center;justify-content:center;overflow:hidden;
     transition:opacity .22s ease,transform .22s ease;
   }
-  .pm-media img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+  .pm-media img{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;}
   .pm-close{
     position:absolute;top:16px;right:16px;z-index:3;
     display:flex;align-items:center;justify-content:center;
@@ -735,19 +830,19 @@
   .pm-body{padding:36px 36px 32px;display:flex;flex-direction:column;transition:opacity .22s ease,transform .22s ease;}
   .pm-top.pm-switching .pm-media{opacity:0;transform:scale(.97);}
   .pm-top.pm-switching .pm-body{opacity:0;transform:translateY(6px);}
-  .pm-cat{
-    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--green-deep);margin-bottom:10px;
-  }
   .pm-title{font-size:clamp(20px,2.4vw,26px);font-weight:600;line-height:1.25;margin-bottom:8px;}
   .pm-sku{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--grey-light);margin-bottom:16px;}
   .pm-stock{
-    display:inline-flex;align-self:flex-start;
-    background:var(--ink);color:#fff;font-family:'IBM Plex Mono';
-    font-size:10px;letter-spacing:.08em;padding:6px 11px;text-transform:uppercase;
-    margin-bottom:18px;
+    display:inline-flex;align-items:center;gap:7px;align-self:flex-start;
+    font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.09em;
+    color:var(--green-deep);text-transform:uppercase;margin-bottom:10px;
   }
-  .pm-stock.low{background:var(--rust);}
+  .pm-stock::before{
+    content:'';width:7px;height:7px;border-radius:50%;flex-shrink:0;
+    background:var(--green-deep);
+  }
+  .pm-stock.low{color:var(--rust);}
+  .pm-stock.low::before{background:var(--rust);}
   .pm-share{display:flex;align-items:center;gap:9px;margin-bottom:22px;}
   .pm-share a{
     display:flex;align-items:center;justify-content:center;
@@ -779,7 +874,7 @@
     display:flex;align-items:baseline;gap:8px;margin-bottom:26px;
     padding-bottom:26px;border-bottom:1px solid var(--line);
   }
-  .pm-price{font-family:'IBM Plex Mono';font-size:28px;font-weight:500;}
+  .pm-price{font-family:'IBM Plex Mono';font-size:28px;font-weight:500;white-space:nowrap;}
   .pm-unit{font-family:'Inter';font-size:13px;color:var(--grey-light);}
   .pm-qty-row{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
   .pm-qty{
@@ -794,11 +889,15 @@
   .pm-add-btn{
     margin-top:auto;
     display:flex;align-items:center;justify-content:center;gap:10px;
-    background:var(--ink);color:#fff;border:none;
+    background:linear-gradient(135deg, rgba(20,20,22,.92), rgba(0,0,0,.96));
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    color:#fff;border:1px solid rgba(255,255,255,.14);
+    border-radius:14px;
     padding:16px 20px;font-family:'Inter';font-size:14px;font-weight:600;
-    letter-spacing:.02em;cursor:pointer;transition:background .2s;
+    letter-spacing:.02em;cursor:pointer;transition:background .2s,box-shadow .2s;
+    box-shadow:0 12px 26px -10px rgba(0,0,0,.55);
   }
-  .pm-add-btn:hover{background:var(--green-deep);}
+  .pm-add-btn:hover{background:linear-gradient(135deg, rgba(35,36,40,.95), rgba(0,0,0,.98));box-shadow:0 14px 30px -10px rgba(0,0,0,.65);}
   .pm-add-btn svg{width:17px;height:17px;}
 
   /* ----- Similar Products ----- */
@@ -841,7 +940,7 @@
     font-family:'Inter';font-size:12.5px;font-weight:600;line-height:1.3;margin-bottom:4px;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
-  .pm-sim-price{font-family:'IBM Plex Mono';font-size:12px;color:var(--green-deep);}
+  .pm-sim-price{font-family:'IBM Plex Mono';font-size:12px;color:var(--green-deep);white-space:nowrap;}
 
   @media(max-width:640px){
     .pm-top{grid-template-columns:1fr;}
@@ -930,12 +1029,13 @@
     header.scrolled{padding:6px 0;}
     .brand img{height:64px;}
     header.scrolled .brand img{height:48px;}
-    .hero{padding-top:80px;margin-top:60px;}
-    .mbanner3d{margin-bottom:18px;gap:6px;}
-    .mbanner3d-track{gap:8px;}
-    .mbanner3d-slide{flex-basis:calc((100% - 16px)/3);border-radius:10px;aspect-ratio:16/9;}
-    .mbanner3d-arrow{width:28px;height:28px;}
-    .mbanner3d-arrow svg{width:13px;height:13px;}
+    #products{padding-top:90px;padding-bottom:48px;}
+    .ghero{height:340px;margin-bottom:22px;border-radius:14px;}
+    .ghero-text{padding:0 22px;}
+    .ghero-title{font-size:26px;}
+    .ghero-sub{font-size:13.5px;max-width:280px;}
+    .ghero-cta{padding:11px 22px;font-size:13px;}
+    .ghero-dots{bottom:14px;}
     .why .wrap{padding:56px 18px;}
     .why-grid{grid-template-columns:1fr;gap:24px;}
     .band{padding:60px 0;}
@@ -943,7 +1043,7 @@
   @media(max-width:400px){
     .brand img{height:52px;}
     header.scrolled .brand img{height:40px;}
-    .hero{padding-top:70px;margin-top:50px;}
+    #products{padding-top:78px;}
     .navsearch input{font-size:12.5px;}
   }
 
@@ -969,20 +1069,42 @@
     .navsearch input,
     .navsearch .search-suggestions{display:none;}
     .navsearch.expanded{
-      position:absolute;left:14px;right:14px;top:calc(100% + 8px);
-      width:auto;height:auto;flex:none;justify-content:flex-start;
-      background:#fff;border:1px solid var(--line);border-radius:14px;
-      padding:9px 14px;gap:9px;
-      box-shadow:0 16px 40px -14px rgba(20,22,20,.28);
+      position:static;
+      flex:1 1 auto;width:auto;height:38px;
+      justify-content:flex-start;
+      background:#fff;border:1px solid var(--line);border-radius:12px;
+      padding:0 8px 0 12px;gap:8px;
+      box-shadow:none;margin:0;
     }
     .navsearch.expanded svg{color:var(--grey-light);}
-    .navsearch.expanded input{display:block;}
-    .navsearch.expanded .search-suggestions.open{display:block;}
+    .navsearch.expanded input{display:block;height:36px;flex:1;min-width:0;}
+    .navsearch.expanded .search-suggestions.open{
+      display:block;position:absolute;left:14px;right:14px;top:calc(100% + 8px);
+    }
+    .navsearch-close{
+      display:none;flex-shrink:0;align-items:center;justify-content:center;
+      width:26px;height:26px;border-radius:50%;border:none;
+      background:var(--paper);color:var(--grey);cursor:pointer;
+    }
+    .navsearch.expanded .navsearch-close{display:flex;}
+    header nav.wrap.searching .brand,
+    header nav.wrap.searching .navicons{
+      display:none;
+    }
 
     /* --- catalogue heading: keep just the Categories button, like the sample --- */
-    #products{padding-top:14px;}
     #products .section-head{margin-bottom:14px;justify-content:flex-start;}
     #products .section-head > div:first-child{display:none;}
+    .head-trigger-group{width:100%;justify-content:space-between;}
+
+    /* --- Categories / Offers row stays pinned under the header on scroll --- */
+    #productsHeadRow{
+      position:sticky;
+      top:var(--sticky-offset,74px);
+      z-index:150;
+      padding:8px 0;
+      margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px;
+    }
 
     /* --- active category chip --- */
     .active-cat-chip{
@@ -1487,6 +1609,178 @@
   @media(prefers-reduced-motion:reduce){
     .reveal-up,.reveal-group > *{opacity:1 !important;transform:none !important;transition:none !important;}
   }
+
+  /* =====================================================================
+     GLASS UI/UX OVERRIDE — frosted glass theme layered on top of the
+     existing design. Sits at the end of the stylesheet so it wins the
+     cascade against the rules above without needing to touch them.
+     ===================================================================== */
+
+  html,body{
+    background:var(--paper);
+    min-height:100vh;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(600px 500px at 90% 8%, rgba(63,107,82,.05), transparent 60%),
+      radial-gradient(500px 450px at 4% 60%, rgba(20,90,140,.04), transparent 60%);
+  }
+
+  /* ---- glass surface tokens ---- */
+  :root{
+    --glass-bg:rgba(255,255,255,.55);
+    --glass-bg-strong:rgba(255,255,255,.72);
+    --glass-border:rgba(255,255,255,.9);
+    --glass-blur:blur(20px);
+    --glass-shadow:0 8px 32px -14px rgba(20,22,20,.18);
+  }
+
+  /* ---- header: floating WHITE glass pill, logo stays fully visible ---- */
+  header{
+    top:12px;left:12px;right:12px;
+    width:auto;max-width:1400px;margin:0 auto;
+    border-radius:20px;
+    background:rgba(255,255,255,.62);
+    backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+    border:1px solid rgba(255,255,255,.85);
+    box-shadow:var(--glass-shadow);
+  }
+  header.scrolled{background:rgba(255,255,255,.82);box-shadow:0 12px 32px -16px rgba(20,22,20,.22);}
+  #products{padding-top:168px;}
+  @media(max-width:640px){
+    #products{padding-top:104px;}
+  }
+  .brand-text .name{color:var(--ink);}
+  .brand-text .sub{color:var(--grey);}
+  .icon-btn{color:var(--ink);}
+  .icon-btn:hover{background:rgba(37,38,43,.08);}
+  .icon-btn.profile{background:none;color:var(--ink);backdrop-filter:none;}
+  .icon-btn.profile:hover{background:rgba(37,38,43,.08) !important;}
+  #cartTrigger{
+    background:none;color:var(--ink);
+    width:auto;height:32px;border-radius:999px;padding:0 8px;gap:6px;
+  }
+  #cartTrigger svg{width:19px;height:19px;stroke-width:2.2;flex-shrink:0;}
+  #cartTrigger .cart-label{font-family:'Inter';font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.01em;}
+  #cartTrigger:hover{background:rgba(37,38,43,.08);}
+  .cart-icon-wrap{position:relative;display:inline-flex;}
+  #cartTrigger .badge{
+    position:absolute !important;top:-7px;right:-8px;
+    min-width:15px;height:15px;padding:0 3px;
+    background:#e0392b !important;color:#fff;box-shadow:0 0 0 2px #fff;
+  }
+  .mbn-icon-wrap .badge{background:#e0392b !important;box-shadow:0 0 0 2px #fff;}
+  .navsearch{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);backdrop-filter:blur(10px);}
+  .navsearch:hover,.navsearch:focus-within{background:rgba(255,255,255,.85);border-color:var(--line);}
+  .navsearch svg{color:var(--grey-light);}
+  .navsearch input{color:var(--ink);}
+  .navsearch input::placeholder{color:var(--grey-light);}
+  .search-suggestions{background:rgba(255,255,255,.88);backdrop-filter:blur(24px);border:1px solid var(--line);}
+  .suggestion-name{color:var(--ink);}
+  .suggestion-price{color:var(--green-deep);}
+  .suggestion-item:hover{background:var(--paper);}
+
+  /* ---- hero banner: glass frame ---- */
+  .ghero{border:1px solid rgba(255,255,255,.6);box-shadow:var(--glass-shadow);}
+
+  /* ---- product cards: frosted glass panels ---- */
+  .card{
+    background:var(--glass-bg-strong);
+    backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+    border:1px solid rgba(255,255,255,.9);
+    border-radius:18px;
+    box-shadow:var(--glass-shadow);
+  }
+  .card:hover{box-shadow:0 18px 40px -18px rgba(20,22,20,.22);border-color:var(--grey-light);}
+  .card-media{background-color:#ffffff;}
+
+  /* ---- buttons: glass pills in the brand's white / black / gray palette ---- */
+  .btn-primary,.ghero-cta,.auth-submit,.gate-card .btn-primary,.pm-add-btn{
+    background:linear-gradient(135deg,var(--ink),#000);
+    border:1px solid rgba(255,255,255,.3);
+    box-shadow:0 12px 26px -10px rgba(20,22,20,.5);
+  }
+  .btn-primary:hover,.ghero-cta:hover,.auth-submit:hover{
+    background:linear-gradient(135deg,#3a3b41,var(--ink));
+  }
+
+  /* ---- product modal "Add to Cart": dark frosted glass CTA ---- */
+  .pm-add-btn{
+    background:linear-gradient(135deg, rgba(20,20,22,.92), rgba(0,0,0,.96)) !important;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.16) !important;
+    border-radius:14px;
+  }
+  .pm-add-btn:hover{background:linear-gradient(135deg, rgba(35,36,40,.95), rgba(0,0,0,.98)) !important;}
+  .card-add-btn{
+    background:rgba(255,255,255,.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 18px -8px rgba(20,22,20,.18);
+    color:var(--ink) !important;padding:7px 12px 7px 10px;
+  }
+  .card-add-btn svg{stroke:var(--ink);}
+  .card-add-btn:hover{background:rgba(255,255,255,.9) !important;}
+  .card-qty-stepper{background:rgba(255,255,255,.65) !important;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.9);}
+  .cqs-btn,.cqs-val{color:var(--ink) !important;}
+  .cqs-btn:hover{background:rgba(37,38,43,.08) !important;}
+  .cat-sidebar{background:var(--glass-bg-strong) !important;backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid rgba(255,255,255,.9) !important;box-shadow:var(--glass-shadow) !important;}
+  .cat-side-item.active{color:var(--green-deep) !important;background:none !important;border:none;}
+  .cat-side-item.active .dot{background:var(--green-deep) !important;}
+  .cat-side-indicator{background:rgba(255,255,255,.55) !important;border:1px solid rgba(255,255,255,.8);}
+
+  /* ---- login / register modal: frosted WHITE glass card ---- */
+  .auth-box{
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 40px 90px -24px rgba(20,22,20,.32);
+  }
+  .auth-top{background:transparent;border-bottom:1px solid var(--line);}
+  .auth-field input,.auth-otp-input{
+    background:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.9);
+  }
+  .auth-field input:focus,.auth-otp-input:focus{background:#fff;}
+  .auth-google-btn{background:rgba(255,255,255,.85);}
+  .auth-close{background:var(--ink);}
+
+  /* ---- cart drawer: white glass ---- */
+  .cart-drawer{
+    background:rgba(255,255,255,.75);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+    border-left:1px solid rgba(255,255,255,.9);
+  }
+
+  /* ---- mobile profile sheet: white glass ---- */
+  .mps-sheet{
+    background:rgba(255,255,255,.82);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+    border:1px solid rgba(255,255,255,.9);
+  }
+  .mps-item{background:rgba(37,38,43,.04);}
+  .mps-item:hover{background:rgba(37,38,43,.08);}
+
+  /* ---- footer: white glass ---- */
+  footer{
+    background:rgba(255,255,255,.55) !important;
+    backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+    border-top:1px solid rgba(255,255,255,.9);
+  }
+
+  /* =====================================================================
+     MOBILE BOTTOM NAV — floating WHITE glass pill
+     ===================================================================== */
+  @media(max-width:640px){
+    body{padding-bottom:110px;}
+    .mobile-bottom-nav{
+      left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));
+      border-radius:999px;
+      background:rgba(255,255,255,.65);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.9);
+      box-shadow:0 16px 36px -16px rgba(20,22,20,.28);
+      padding:10px 6px calc(10px + env(safe-area-inset-bottom));
+    }
+    .mbn-item{color:var(--grey);}
+    .mbn-item.active{color:var(--green-deep);}
+  }
 </style>
 </head>
 <body>
@@ -1499,12 +1793,22 @@
     <label class="navsearch">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
       <input type="text" id="searchInput" placeholder="Search your products from here" autocomplete="off">
+      <button type="button" class="navsearch-close" id="navsearchClose" aria-label="Close search">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
       <div class="search-suggestions" id="searchSuggestions"></div>
     </label>
     <div class="navicons">
+      <a href="#ghero" class="nav-offers-link" id="navOffersLink">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/></svg>
+        Offers
+      </a>
       <button class="icon-btn" id="cartTrigger" aria-label="Cart">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
-        <span class="badge" id="cartBadge"></span>
+        <span class="cart-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 2-1.58l1.65-7.42H5.12"/></svg>
+          <span class="badge" id="cartBadge"></span>
+        </span>
+        <span class="cart-label">Cart</span>
       </button>
       <div class="profile-wrap" id="profileWrap">
         <button class="icon-btn profile" id="profileTrigger" aria-label="Profile" aria-haspopup="true" aria-expanded="false">
@@ -1533,6 +1837,17 @@
     </div>
   </nav>
 </header>
+
+<!-- ===== iOS-STYLE GLASS NOTIFICATION — used by the Offers trigger ===== -->
+<div class="ios-toast" id="offersToast">
+  <div class="ios-toast-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/></svg>
+  </div>
+  <div class="ios-toast-text">
+    <div class="ios-toast-title">Offers</div>
+    <div class="ios-toast-sub">No offers available yet — check back soon</div>
+  </div>
+</div>
 
 <div class="cat-overlay" id="catOverlay">
   <aside class="cat-drawer">
@@ -1568,7 +1883,7 @@
     <div class="cart-drawer-foot" id="cartFoot">
       <div class="cart-subtotal-row">
         <span>Subtotal</span>
-        <span id="cartSubtotal">MVR 0</span>
+        <span id="cartSubtotal"><img src="img/mvr-icon-black.png" alt="MVR" class="mvr-icon">0</span>
       </div>
       <button class="cart-checkout-btn" id="cartCheckoutBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -1665,21 +1980,18 @@
 </div>
 
 <div class="pm-overlay" id="pmOverlay">
-  <div class="pm-box" id="pmBox">
-    <div class="pm-scroll-bar" id="pmScrollBar">
-      <button class="pm-scroll-close" id="pmScrollClose" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        Close
-      </button>
-    </div>
+  <div class="pm-dialog">
+    <button class="pm-close-x" id="pmScrollClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="pm-box" id="pmBox">
     <div class="pm-top" id="pmTop">
       <div class="pm-media" id="pmMedia">
       </div>
       <div class="pm-body">
-        <span class="pm-cat" id="pmCat"></span>
+        <span class="pm-stock" id="pmStock"></span>
         <h3 class="pm-title" id="pmTitle"></h3>
         <div class="pm-sku" id="pmSku"></div>
-        <span class="pm-stock" id="pmStock"></span>
 
         <div class="pm-share">
           <a href="https://www.facebook.com/platinomaldives" target="_blank" rel="noopener noreferrer" class="pm-share-img" aria-label="Visit us on Facebook">
@@ -1721,56 +2033,15 @@
       <div class="pm-sim-grid" id="pmSimGrid"></div>
     </div>
   </div>
-</div>
-
-<section class="hero">
-  <div class="wrap reveal-up">
-    <section class="mbanner" id="mBanner" aria-label="Featured categories">
-      <div class="mbanner-viewport">
-        <div class="mbanner-track" id="mBannerTrack"></div>
-      </div>
-      <button type="button" class="mbanner-arrow prev" id="mBannerPrev" aria-label="Previous slide">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button type="button" class="mbanner-arrow next" id="mBannerNext" aria-label="Next slide">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <div class="mbanner-dots" id="mBannerDots"></div>
-    </section>
-
-    <div class="mbanner3d" id="mBanner3d" aria-label="Featured categories">
-      <button type="button" class="mbanner3d-arrow prev" id="mBanner3dPrev" aria-label="Previous slide">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div class="mbanner3d-viewport">
-        <div class="mbanner3d-track" id="mBanner3dTrack"></div>
-      </div>
-      <button type="button" class="mbanner3d-arrow next" id="mBanner3dNext" aria-label="Next slide">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
   </div>
-
-</section>
+</div>
 
 <section class="section" id="products">
   <div class="wrap">
-    <div class="section-head reveal-up">
-      <div></div>
-      <button class="cat-trigger" id="catTrigger">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
-        Categories
-      </button>
-    </div>
-    <div class="active-cat-chip" id="activeCatChip">
-      <span id="activeCatChipLabel"></span>
-      <button type="button" id="activeCatChipClear" aria-label="Clear category filter">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
     <div class="products-layout">
       <aside class="cat-sidebar" id="catSidebar">
         <div class="cat-sidebar-title">Categories</div>
+        <div class="cat-side-indicator" id="catSideIndicator"></div>
         <button class="cat-side-item active" data-cat="all"><span class="dot"></span>All Stock</button>
         <button class="cat-side-item" data-cat="Beverages"><span class="dot"></span>Beverages</button>
         <button class="cat-side-item" data-cat="Snacks"><span class="dot"></span>Snacks</button>
@@ -1779,6 +2050,49 @@
         <button class="cat-side-item" data-cat="Frozen & Dairy"><span class="dot"></span>Frozen &amp; Dairy</button>
       </aside>
       <div class="products-main">
+        <div class="ghero reveal-up" id="ghero" aria-label="Featured categories">
+          <div class="ghero-bg" id="gheroBg"></div>
+          <div class="ghero-overlay"></div>
+          <div class="ghero-text">
+            <div class="ghero-eyebrow" id="gheroEyebrow"></div>
+            <h2 class="ghero-title" id="gheroTitle"></h2>
+            <p class="ghero-sub" id="gheroSub"></p>
+            <button type="button" class="ghero-cta" id="gheroCta"></button>
+          </div>
+          <div class="ghero-dots" id="gheroDots"></div>
+        </div>
+
+        <div class="brands-strip reveal-up">
+          <span class="brands-tag">Exclusive Brands</span>
+          <div class="brands-track-wrap">
+            <div class="brands-track" id="brandsTrack"></div>
+          </div>
+        </div>
+
+        <div class="section-head reveal-up" id="productsHeadRow" style="margin-top:12px;">
+          <div></div>
+          <div class="head-trigger-group">
+            <button class="cat-trigger" id="catTrigger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+              Categories
+            </button>
+            <button class="cat-trigger offers-trigger" id="offersTrigger">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/></svg>
+              Offers
+            </button>
+          </div>
+        </div>
+        <div class="products-title-row">
+          <h3 id="productsTitle">All Products</h3>
+          <span id="productsCount">0 items</span>
+        </div>
+        <div class="active-cat-chip" id="activeCatChip">
+          <span id="activeCatChipLabel"></span>
+          <button type="button" id="activeCatChipClear" aria-label="Clear category filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
         <div class="grid" id="productGrid"></div>
         <div class="section-foot">
           <a href="#" class="btn btn-ghost">Load Full Catalogue</a>
@@ -2054,10 +2368,17 @@
   const header = document.querySelector('header');
   const THRESHOLD = 40;
   let ticking = false;
+  function updateStickyOffset(){
+    const rect = header.getBoundingClientRect();
+    document.documentElement.style.setProperty('--sticky-offset', (rect.bottom + 10) + 'px');
+  }
   function update(){
     header.classList.toggle('scrolled', window.scrollY > THRESHOLD);
+    updateStickyOffset();
     ticking = false;
   }
+  window.addEventListener('resize', updateStickyOffset);
+  updateStickyOffset();
   window.addEventListener('scroll', function(){
     if(!ticking){
       requestAnimationFrame(update);
@@ -2089,19 +2410,39 @@
 /* ===== MOBILE SEARCH ICON (collapses to just the magnifier, like the app) ===== */
 (function(){
   const navsearch = document.querySelector('.navsearch');
+  const navwrap = document.querySelector('header nav.wrap');
   const input = document.getElementById('searchInput');
+  const closeBtn = document.getElementById('navsearchClose');
+
+  function collapseSearch(){
+    navsearch.classList.remove('expanded');
+    if(navwrap) navwrap.classList.remove('searching');
+  }
+  function expandSearch(){
+    navsearch.classList.add('expanded');
+    if(navwrap) navwrap.classList.add('searching');
+    setTimeout(() => input.focus(), 50);
+  }
+
   navsearch.addEventListener('click', function(e){
     if(window.innerWidth > 640) return;
     if(!navsearch.classList.contains('expanded')){
       e.preventDefault();
-      navsearch.classList.add('expanded');
-      setTimeout(() => input.focus(), 50);
+      expandSearch();
     }
   });
+  if(closeBtn){
+    closeBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      input.value = '';
+      collapseSearch();
+    });
+  }
   document.addEventListener('click', function(e){
     if(window.innerWidth > 640) return;
     if(!navsearch.contains(e.target) && navsearch.classList.contains('expanded') && !input.value.trim()){
-      navsearch.classList.remove('expanded');
+      collapseSearch();
     }
   });
 })();
@@ -2118,20 +2459,55 @@
    "products" collection (managed from admin.html) is empty. Once you
    add real products from the admin panel, those take over automatically. */
 const PRODUCTS_SEED = [
-  { name:"Sparkling Cola 24-Pack", sku:"BEV-1024", cat:"Beverages", price:"MVR 210", unit:"/ carton", stock:"in", img:"" },
-  { name:"Bottled Water 500ml (Case)", sku:"BEV-1032", cat:"Beverages", price:"MVR 95", unit:"/ carton", stock:"in", img:"" },
-  { name:"Instant Coffee 200g Tin", sku:"BEV-1041", cat:"Beverages", price:"MVR 340", unit:"/ case", stock:"low", img:"" },
-  { name:"Potato Chips Family Pack", sku:"SNK-2010", cat:"Snacks", price:"MVR 180", unit:"/ carton", stock:"in", img:"" },
-  { name:"Assorted Biscuits Tray", sku:"SNK-2023", cat:"Snacks", price:"MVR 145", unit:"/ tray", stock:"in", img:"" },
-  { name:"Chocolate Bar Display Box", sku:"SNK-2044", cat:"Snacks", price:"MVR 260", unit:"/ box", stock:"in", img:"" },
-  { name:"Dish Soap 1L (Case of 12)", sku:"HHD-3011", cat:"Household", price:"MVR 220", unit:"/ case", stock:"in", img:"" },
-  { name:"Laundry Detergent 3kg", sku:"HHD-3028", cat:"Household", price:"MVR 410", unit:"/ case", stock:"low", img:"" },
-  { name:"Paper Towels 6-Roll Pack", sku:"HHD-3035", cat:"Household", price:"MVR 165", unit:"/ carton", stock:"in", img:"" },
-  { name:"Toothpaste 100ml (Case)", sku:"PCR-4012", cat:"Personal Care", price:"MVR 195", unit:"/ case", stock:"in", img:"" },
-  { name:"Bar Soap Multipack", sku:"PCR-4026", cat:"Personal Care", price:"MVR 130", unit:"/ carton", stock:"in", img:"" },
-  { name:"Frozen Chicken Nuggets 1kg", sku:"FRZ-5014", cat:"Frozen & Dairy", price:"MVR 88", unit:"/ unit", stock:"in", img:"" },
-  { name:"UHT Milk 1L (Case of 12)", sku:"FRZ-5022", cat:"Frozen & Dairy", price:"MVR 250", unit:"/ case", stock:"low", img:"" },
-  { name:"Butter Blocks 500g (Case)", sku:"FRZ-5031", cat:"Frozen & Dairy", price:"MVR 300", unit:"/ case", stock:"in", img:"" },
+  { name:"Mr. Brown Vanilla Coffee", sku:"BEV-1001", cat:"Beverages", price:"MVR 270", unit:"/ case", stock:"in", img:"img/categories/beverages/mr.brown vanilla.png" },
+  { name:"Mr. Brown Cappuccino Coffee", sku:"BEV-1002", cat:"Beverages", price:"MVR 270", unit:"/ case", stock:"in", img:"img/categories/beverages/mr.brown caffucino.png" },
+  { name:"Mr. Brown Blue Mountain Blend Coffee", sku:"BEV-1003", cat:"Beverages", price:"MVR 270", unit:"/ case", stock:"in", img:"img/categories/beverages/mr.brown blue mountain.png" },
+  { name:"Mr. Brown Caramel Latte Coffee", sku:"BEV-1004", cat:"Beverages", price:"MVR 270", unit:"/ case", stock:"in", img:"img/categories/beverages/mr.brown  caramel latte.png" },
+  { name:"Mr. Brown Iced Coffee", sku:"BEV-1005", cat:"Beverages", price:"MVR 270", unit:"/ case", stock:"in", img:"img/categories/beverages/mr.brown iced coffee.png" },
+  { name:"Mr. Brown Black Coffee", sku:"BEV-1006", cat:"Beverages", price:"MVR 270", unit:"/ case", stock:"in", img:"img/categories/beverages/mr.brown black coffee.png" },
+  { name:"Mr. Brown Macadamia Nut Coffee", sku:"BEV-1007", cat:"Beverages", price:"MVR 270", unit:"/ case", stock:"in", img:"img/categories/beverages/mr.brown  macadamia nut.png" },
+  { name:"Coca-Cola Can", sku:"BEV-1008", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Sprite Can", sku:"BEV-1009", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Fanta Orange Can", sku:"BEV-1010", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Fanta Strawberry Can", sku:"BEV-1011", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Schweppes Bitter Lemon", sku:"BEV-1012", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Schweppes Soda Water", sku:"BEV-1013", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Schweppes Tonic Water", sku:"BEV-1014", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Diet Coke Can", sku:"BEV-1015", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Coke Zero Can", sku:"BEV-1016", cat:"Beverages", price:"MVR 260", unit:"/ case", stock:"in", img:"" },
+  { name:"Lipton Ice Tea Can", sku:"BEV-1017", cat:"Beverages", price:"MVR 290", unit:"/ case", stock:"in", img:"" },
+  { name:"F&N Ice Cream Soda", sku:"BEV-1018", cat:"Beverages", price:"MVR 165", unit:"/ case", stock:"in", img:"" },
+  { name:"F&N Strawberry", sku:"BEV-1019", cat:"Beverages", price:"MVR 165", unit:"/ case", stock:"in", img:"" },
+  { name:"F&N Grape", sku:"BEV-1020", cat:"Beverages", price:"MVR 165", unit:"/ case", stock:"in", img:"" },
+  { name:"F&N Orange", sku:"BEV-1021", cat:"Beverages", price:"MVR 165", unit:"/ case", stock:"in", img:"" },
+  { name:"F&N Zappel Can", sku:"BEV-1022", cat:"Beverages", price:"MVR 165", unit:"/ case", stock:"in", img:"" },
+  { name:"XL Energy Drink", sku:"BEV-1023", cat:"Beverages", price:"MVR 410", unit:"/ case", stock:"in", img:"" },
+  { name:"100Plus Original", sku:"BEV-1024", cat:"Beverages", price:"MVR 320", unit:"/ case", stock:"in", img:"" },
+  { name:"100Plus Lemon Lime", sku:"BEV-1025", cat:"Beverages", price:"MVR 320", unit:"/ case", stock:"in", img:"" },
+  { name:"Sagiko Soursop Juice Drink", sku:"BEV-1026", cat:"Beverages", price:"MVR 245", unit:"/ case", stock:"in", img:"" },
+  { name:"Sagiko Mix Fruit Juice Drink", sku:"BEV-1027", cat:"Beverages", price:"MVR 245", unit:"/ case", stock:"in", img:"" },
+  { name:"Sagiko Tamarind Juice Drink", sku:"BEV-1028", cat:"Beverages", price:"MVR 245", unit:"/ case", stock:"in", img:"" },
+  { name:"Sagiko Mango Juice Drink", sku:"BEV-1029", cat:"Beverages", price:"MVR 245", unit:"/ case", stock:"in", img:"" },
+  { name:"Sagiko Pomegranate Juice Drink", sku:"BEV-1030", cat:"Beverages", price:"MVR 245", unit:"/ case", stock:"in", img:"" },
+  { name:"Sagiko Pink Guava Juice Drink", sku:"BEV-1031", cat:"Beverages", price:"MVR 245", unit:"/ case", stock:"in", img:"" },
+  { name:"Starjus Mango Cordial", sku:"BEV-1032", cat:"Beverages", price:"MVR 440", unit:"/ case", stock:"in", img:"" },
+  { name:"Starjus Lychee Cordial", sku:"BEV-1033", cat:"Beverages", price:"MVR 440", unit:"/ case", stock:"in", img:"" },
+  { name:"Starjus Blackcurrant Cordial", sku:"BEV-1034", cat:"Beverages", price:"MVR 440", unit:"/ case", stock:"in", img:"" },
+  { name:"Starjus Orange Cordial", sku:"BEV-1035", cat:"Beverages", price:"MVR 440", unit:"/ case", stock:"in", img:"" },
+  { name:"Starjus Rose Cordial", sku:"BEV-1036", cat:"Beverages", price:"MVR 440", unit:"/ case", stock:"in", img:"" },
+  { name:"Starjus Blueberry Cordial", sku:"BEV-1037", cat:"Beverages", price:"MVR 440", unit:"/ case", stock:"in", img:"" },
+  { name:"Fanta Strawberry Pet Bottle", sku:"BEV-1038", cat:"Beverages", price:"MVR 285", unit:"/ case", stock:"in", img:"" },
+  { name:"Coca-Cola Pet Bottle", sku:"BEV-1039", cat:"Beverages", price:"MVR 285", unit:"/ case", stock:"in", img:"" },
+  { name:"Sprite Pet Bottle", sku:"BEV-1040", cat:"Beverages", price:"MVR 285", unit:"/ case", stock:"in", img:"" },
+  { name:"Fanta Orange Pet Bottle", sku:"BEV-1041", cat:"Beverages", price:"MVR 285", unit:"/ case", stock:"in", img:"" },
+  { name:"Coca-Cola 1.25L Bottle", sku:"BEV-1042", cat:"Beverages", price:"MVR 310", unit:"/ case", stock:"in", img:"" },
+  { name:"Fanta Strawberry 1.25L Bottle", sku:"BEV-1043", cat:"Beverages", price:"MVR 310", unit:"/ case", stock:"in", img:"" },
+  { name:"Sprite 1.25L Bottle", sku:"BEV-1044", cat:"Beverages", price:"MVR 310", unit:"/ case", stock:"in", img:"" },
+  { name:"Fanta Orange 1.25L Bottle", sku:"BEV-1045", cat:"Beverages", price:"MVR 310", unit:"/ case", stock:"in", img:"" },
+  { name:"Indomilk Kids 115ml", sku:"BEV-1046", cat:"Beverages", price:"MVR 180", unit:"/ case", stock:"in", img:"" },
+  { name:"Indomilk Chocolate 180ml", sku:"BEV-1047", cat:"Beverages", price:"MVR 195", unit:"/ case", stock:"in", img:"" },
+  { name:"Indomilk Strawberry 180ml", sku:"BEV-1048", cat:"Beverages", price:"MVR 195", unit:"/ case", stock:"in", img:"" },
+  { name:"Indomilk Vanilla 180ml", sku:"BEV-1049", cat:"Beverages", price:"MVR 195", unit:"/ case", stock:"in", img:"" },
 ];
 
 /* Live product list — starts as the seed catalogue, gets replaced by
@@ -2141,6 +2517,16 @@ let PRODUCTS = PRODUCTS_SEED;
 
 const grid = document.getElementById('productGrid');
 const placeholderIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2 21 7v10l-9 5-9-5V7l9-5Z"/><path d="M12 12 21 7"/><path d="M12 12v9"/><path d="M12 12 3 7"/></svg>`;
+
+/* Renders a price string ("MVR 210") as the MVR icon + the number,
+   for use with innerHTML. Falls back to plain text if it doesn't
+   start with "MVR". */
+function formatPriceHTML(priceStr){
+  const str = String(priceStr == null ? '' : priceStr);
+  const m = str.match(/^MVR\s*(.*)$/i);
+  if(!m) return escapeHTML(str);
+  return `<img src="img/mvr-icon-black.png" alt="MVR" class="mvr-icon">${escapeHTML(m[1])}`;
+}
 
 let currentCategory = 'all';
 let currentQuery = '';
@@ -2158,6 +2544,14 @@ function getFilteredProducts(){
   return items;
 }
 
+function updateProductsTitleRow(cat, count){
+  const titleEl = document.getElementById('productsTitle');
+  const countEl = document.getElementById('productsCount');
+  if(!titleEl || !countEl) return;
+  titleEl.textContent = (!cat || cat === 'all') ? 'All Products' : cat;
+  countEl.textContent = count + (count === 1 ? ' item' : ' items');
+}
+
 function renderProducts(){
   const isFirstRender = grid.children.length === 0;
   grid.classList.add('grid-switching');
@@ -2165,6 +2559,7 @@ function renderProducts(){
   renderProducts._t = window.setTimeout(() => {
     grid.innerHTML = "";
     const items = getFilteredProducts();
+    updateProductsTitleRow(currentCategory, items.length);
 
     if(items.length === 0){
       grid.innerHTML = `
@@ -2183,18 +2578,17 @@ function renderProducts(){
       card.style.animationDelay = Math.min(idx * 45, 450) + 'ms';
       card.innerHTML = `
         <div class="card-media">
-          ${p.stock === 'low' ? '<span class="stock-flag low">Low Stock</span>' : '<span class="stock-flag">In Stock</span>'}
           ${p.img
             ? `<img src="${p.img}" alt="${p.name}">`
             : `<div class="placeholder-mark">${placeholderIcon}<span>Add Photo</span></div>`
           }
         </div>
         <div class="card-body">
-          <span class="card-cat">${p.cat}</span>
+          <span class="card-cat ${p.stock === 'low' ? 'low' : (p.stock === 'out' ? 'out' : '')}">${p.stock === 'low' ? 'Low Stock' : (p.stock === 'out' ? 'Out of Stock' : 'In Stock')}</span>
           <div class="card-title">${p.name}</div>
           <div class="card-sku">SKU ${p.sku}</div>
           <div class="card-footer">
-            <div class="card-price">${p.price}<span class="unit"> ${p.unit}</span></div>
+            <div class="card-price">${formatPriceHTML(p.price)}<span class="unit"> ${p.unit}</span></div>
             <div class="card-action" data-sku="${p.sku}">${cardActionHTML(getQtyForSku(p.sku), p.name)}</div>
           </div>
         </div>
@@ -2224,11 +2618,21 @@ function renderProducts(){
 }
 renderProducts();
 
+function moveCatSideIndicator(){
+  const indicator = document.getElementById('catSideIndicator');
+  const active = document.querySelector('.cat-side-item.active');
+  if(!indicator || !active) return;
+  indicator.style.transform = `translateY(${active.offsetTop}px)`;
+  indicator.style.height = active.offsetHeight + 'px';
+  indicator.style.opacity = '1';
+}
+
 function selectCategory(cat){
   currentCategory = cat;
   document.querySelectorAll('.cat-item').forEach(i => i.classList.toggle('active', i.dataset.cat === cat));
   document.querySelectorAll('.cat-drawer-item').forEach(i => i.classList.toggle('active', i.dataset.cat === cat));
   document.querySelectorAll('.cat-side-item').forEach(i => i.classList.toggle('active', i.dataset.cat === cat));
+  moveCatSideIndicator();
 
   const chip = document.getElementById('activeCatChip');
   const chipLabel = document.getElementById('activeCatChipLabel');
@@ -2241,6 +2645,9 @@ function selectCategory(cat){
 
   renderProducts();
 }
+window.addEventListener('resize', moveCatSideIndicator);
+requestAnimationFrame(moveCatSideIndicator);
+
 document.getElementById('activeCatChipClear').addEventListener('click', () => selectCategory('all'));
 
 document.querySelectorAll('.cat-item').forEach(item => {
@@ -2290,7 +2697,7 @@ function renderSuggestions(){
         <span class="suggestion-name">${highlightMatch(p.name, q)}</span>
         <span class="suggestion-meta">
           <span class="suggestion-cat">${escapeHTML(p.cat)}</span>
-          <span class="suggestion-price">${escapeHTML(p.price)}</span>
+          <span class="suggestion-price">${formatPriceHTML(p.price)}</span>
         </span>
       </div>
     `).join('');
@@ -2354,6 +2761,28 @@ catClose.addEventListener('click', closeCatDrawer);
 catOverlay.addEventListener('click', e => { if(e.target === catOverlay) closeCatDrawer(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeCatDrawer(); });
 
+/* ===== OFFERS TRIGGER — iOS-style glass notification banner
+   (no offers live yet, so this just tells the customer so) ===== */
+const offersToast = document.getElementById('offersToast');
+let offersToastTimer = null;
+function goToOffers(){
+  if(!offersToast) return;
+  clearTimeout(offersToastTimer);
+  offersToast.classList.remove('show'); // restart animation if tapped again quickly
+  void offersToast.offsetWidth;
+  offersToast.classList.add('show');
+  offersToastTimer = setTimeout(() => offersToast.classList.remove('show'), 3200);
+}
+if(offersToast) offersToast.addEventListener('click', () => {
+  clearTimeout(offersToastTimer);
+  offersToast.classList.remove('show');
+});
+const offersTrigger = document.getElementById('offersTrigger');
+if(offersTrigger) offersTrigger.addEventListener('click', goToOffers);
+const navOffersLink = document.getElementById('navOffersLink');
+if(navOffersLink) navOffersLink.addEventListener('click', (e) => { e.preventDefault(); goToOffers(); });
+
+
 document.querySelectorAll('.cat-drawer-item').forEach(item => {
   item.addEventListener('click', () => {
     selectCategory(item.dataset.cat);
@@ -2369,105 +2798,188 @@ document.querySelectorAll('.cat-side-item').forEach(item => {
 });
 
 /* =========================================================
-   HERO BANNER CAROUSEL — simple slide carousel with dots/arrows.
-   To use a real photo per category: set "img" below to a path,
-   e.g. "assets/categories/beverages.jpg". Leave "" for placeholder.
+   HERO BANNER CAROUSEL — full-bleed photo slide with overlay text,
+   CTA button, and dot indicators (Mazi-style). Edit copy per slide
+   below; "img" is the background photo for that slide.
 ========================================================= */
 const CATEGORY_VISUALS = [
-  { name:"Beverages", img:"img/homepage/mrbrown.jpeg" },
-  { name:"Snacks", img:"img/homepage/starjus.jpeg" },
-  { name:"Household", img:"img/homepage/1household.jpg" },
-  { name:"Personal Care", img:"img/homepage/1personalcare.jpg" },
-  { name:"Frozen & Dairy", img:"img/homepage/1frozen&dairy.webp" },
+  { name:"Beverages", cat:"Beverages", img:"img/homepage/mrbrown.jpeg",
+    eyebrow:"New Arrival", title:"Your New Coffee Companion",
+    sub:"Mr. Brown iced coffee cans have landed in the Maldives.", cta:"Shop Beverages",
+    bgPos:"center 85%", bgZoom:150 },
+  { name:"Nescafé", cat:"Beverages", img:"img/homepage/nescafe.jpeg",
+    eyebrow:"Coffee & Instants", title:"Nescafé, Every Morning",
+    sub:"Classic, Gold and 3-in-1 blends now in stock.", cta:"Shop Nescafé" },
+  { name:"Hildon", cat:"Beverages", img:"img/homepage/hildon.jpeg",
+    eyebrow:"Premium Water", title:"Hildon Sparkling & Still",
+    sub:"Bottled at source in England, delivered to your door.", cta:"Shop Hildon" },
+  { name:"Snacks", cat:"Snacks", img:"img/homepage/starjus.jpeg",
+    eyebrow:"Confectionary & Snacks", title:"The Ultimate Cordial Collection",
+    sub:"StarJus flavors the whole family will love.", cta:"Shop Snacks",
+    bgPos:"center 80%", bgZoom:145 },
 ];
 
-const mBannerTrack = document.getElementById('mBannerTrack');
-const mBannerDots = document.getElementById('mBannerDots');
-CATEGORY_VISUALS.forEach((c, i) => {
-  const slide = document.createElement('div');
-  slide.className = 'mbanner-slide';
-  slide.innerHTML = c.img
-    ? `<img src="${c.img}" alt="${c.name}"><span class="mbanner-label">${c.name}</span>`
-    : `<div class="placeholder-mark" style="height:100%;display:flex;align-items:center;justify-content:center;">${placeholderIcon}</div>`;
-  slide.addEventListener('click', () => {
-    selectCategory(c.name);
-    document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
-  });
-  mBannerTrack.appendChild(slide);
+/* ===== OUR BRANDS — logo marquee =====
+   Add/remove filenames here to change which logos show. Files live in
+   img/brands/. The list is rendered twice back-to-back so the CSS
+   animation (which shifts it exactly -50%) loops seamlessly. */
+const BRAND_LOGOS = [
+  "ajinomoto logo.png",
+  "cavins logo.png",
+  "coca cola logo.png",
+  "hildon logo.png",
+  "indo milk logo.png",
+  "mr.brown logo.png",
+  "nescafe logo.png",
+  "so klin logo.png",
+  "starjus logo.png"
+];
 
-  const dot = document.createElement('span');
-  if(i === 0) dot.classList.add('active');
-  dot.addEventListener('click', () => { goToBannerSlide(i); restartMBannerTimer(); });
-  mBannerDots.appendChild(dot);
+(function renderBrandsMarquee(){
+  const wrap = document.querySelector('.brands-track-wrap');
+  const track = document.getElementById('brandsTrack');
+  if(!wrap || !track) return;
+
+  const logos = [...BRAND_LOGOS, ...BRAND_LOGOS]; // duplicate for seamless loop
+  track.innerHTML = logos.map(file =>
+    `<img src="img/brands/${file}" alt="${file.replace(/\.[a-z]+$/i,'').replace(/ logo$/i,'')}" loading="lazy" draggable="false">`
+  ).join('');
+
+  const SPEED = 45; // px/sec auto-scroll speed
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let setWidth = 0;   // width of ONE set of logos (track holds two sets back-to-back)
+  let posX = 0;       // current translateX, always kept in (-setWidth, 0]
+  let dragging = false;
+  let dragStartX = 0;
+  let dragStartPos = 0;
+  let lastTs = null;
+
+  function measure(){
+    setWidth = track.scrollWidth / 2;
+  }
+  measure();
+  window.addEventListener('load', measure);
+  window.addEventListener('resize', measure);
+
+  function normalize(x){
+    if(setWidth <= 0) return x;
+    while(x <= -setWidth) x += setWidth;
+    while(x > 0) x -= setWidth;
+    return x;
+  }
+  function paint(){
+    track.style.transform = `translate3d(${posX}px,0,0)`;
+  }
+
+  function tick(ts){
+    if(lastTs === null) lastTs = ts;
+    const dt = (ts - lastTs) / 1000;
+    lastTs = ts;
+    if(!dragging && !reduceMotion){
+      posX = normalize(posX - SPEED * dt);
+      paint();
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  function dragStart(clientX){
+    dragging = true;
+    dragStartX = clientX;
+    dragStartPos = posX;
+    wrap.classList.add('dragging');
+  }
+  function dragMove(clientX){
+    if(!dragging) return;
+    posX = normalize(dragStartPos + (clientX - dragStartX));
+    paint();
+  }
+  function dragEnd(){
+    if(!dragging) return;
+    dragging = false;
+    wrap.classList.remove('dragging');
+    // no snapping needed — the auto-scroll loop above simply resumes
+    // moving left from wherever the swipe left it.
+  }
+
+  // Touch (mobile swipe)
+  wrap.addEventListener('touchstart', e => dragStart(e.touches[0].clientX), { passive:true });
+  wrap.addEventListener('touchmove', e => dragMove(e.touches[0].clientX), { passive:true });
+  wrap.addEventListener('touchend', dragEnd);
+  wrap.addEventListener('touchcancel', dragEnd);
+
+  // Mouse (desktop drag, bonus)
+  wrap.addEventListener('mousedown', e => { dragStart(e.clientX); e.preventDefault(); });
+  window.addEventListener('mousemove', e => dragMove(e.clientX));
+  window.addEventListener('mouseup', dragEnd);
+})();
+
+/* ===== HERO SLIDER logic ===== */
+const gheroBg = document.getElementById('gheroBg');
+const gheroDots = document.getElementById('gheroDots');
+const gheroEyebrow = document.getElementById('gheroEyebrow');
+const gheroTitle = document.getElementById('gheroTitle');
+const gheroSub = document.getElementById('gheroSub');
+const gheroCta = document.getElementById('gheroCta');
+const gheroTextEl = document.querySelector('.ghero-text');
+
+CATEGORY_VISUALS.forEach((c, i) => {
+  const bg = document.createElement('div');
+  bg.className = 'ghero-bg-slide' + (i === 0 ? ' active' : '');
+  if(c.img){
+    bg.style.backgroundImage = `url('${c.img}')`;
+    // Some source photos have promo text baked near the top; zoom/shift
+    // past it so it doesn't clash with our own overlay headline.
+    if(c.bgPos) bg.style.backgroundPosition = c.bgPos;
+    if(c.bgZoom) bg.style.backgroundSize = c.bgZoom + '% auto';
+  }
+  gheroBg.appendChild(bg);
+
+  const dot = document.createElement('button');
+  dot.type = 'button';
+  dot.className = 'ghero-dot' + (i === 0 ? ' active' : '');
+  dot.setAttribute('aria-label', c.name);
+  dot.addEventListener('click', () => { goToGHero(i); restartGHeroTimer(); });
+  gheroDots.appendChild(dot);
 });
 
-let mBannerIndex = 0;
-function goToBannerSlide(i){
-  mBannerIndex = (i + CATEGORY_VISUALS.length) % CATEGORY_VISUALS.length;
-  mBannerTrack.style.transform = `translateX(-${mBannerIndex * 100}%)`;
-  mBannerDots.querySelectorAll('span').forEach((d, idx) => d.classList.toggle('active', idx === mBannerIndex));
+function renderGHeroText(c){
+  gheroTextEl.classList.remove('in');
+  gheroEyebrow.textContent = c.eyebrow || '';
+  gheroTitle.textContent = c.title || c.name;
+  gheroSub.textContent = c.sub || '';
+  gheroCta.textContent = c.cta || 'Shop Now';
+  // restart the fade-in animation on the new copy
+  void gheroTextEl.offsetWidth;
+  gheroTextEl.classList.add('in');
 }
-let mBannerTimer = setInterval(() => goToBannerSlide(mBannerIndex + 1), 3800);
-function restartMBannerTimer(){
-  clearInterval(mBannerTimer);
-  mBannerTimer = setInterval(() => goToBannerSlide(mBannerIndex + 1), 3800);
-}
-document.getElementById('mBannerPrev').addEventListener('click', () => { goToBannerSlide(mBannerIndex - 1); restartMBannerTimer(); });
-document.getElementById('mBannerNext').addEventListener('click', () => { goToBannerSlide(mBannerIndex + 1); restartMBannerTimer(); });
 
-/* ===== BANNER ROW — flat, equal-size slides, 3 visible at once (BHM-style) ===== */
-const mBanner3dViewport = document.querySelector('.mbanner3d-viewport');
-const mBanner3dTrack = document.getElementById('mBanner3dTrack');
+gheroCta.addEventListener('click', () => {
+  const c = CATEGORY_VISUALS[gheroIndex];
+  selectCategory(c.cat || c.name);
+  document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
+});
 
-function buildMBanner3dSlides(){
-  mBanner3dTrack.innerHTML = CATEGORY_VISUALS.map((c, i) => `
-    <div class="mbanner3d-slide" data-idx="${i}" data-name="${c.name}">
-      ${c.img
-        ? `<img src="${c.img}" alt="${c.name}">`
-        : `<div class="placeholder-mark" style="height:100%;display:flex;align-items:center;justify-content:center;">${placeholderIcon}</div>`
-      }
-    </div>
-  `).join('');
-  mBanner3dTrack.querySelectorAll('.mbanner3d-slide').forEach(el => {
-    el.addEventListener('click', () => {
-      selectCategory(el.dataset.name);
-      document.getElementById('products').scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  });
+let gheroIndex = 0;
+renderGHeroText(CATEGORY_VISUALS[0]);
+function goToGHero(i){
+  gheroIndex = (i + CATEGORY_VISUALS.length) % CATEGORY_VISUALS.length;
+  gheroBg.querySelectorAll('.ghero-bg-slide').forEach((s, idx) => s.classList.toggle('active', idx === gheroIndex));
+  gheroDots.querySelectorAll('.ghero-dot').forEach((d, idx) => d.classList.toggle('active', idx === gheroIndex));
+  renderGHeroText(CATEGORY_VISUALS[gheroIndex]);
 }
-buildMBanner3dSlides();
-
-// how far one "step" is: one slide's width + the track gap
-function m3dStep(){
-  const slide = mBanner3dTrack.querySelector('.mbanner3d-slide');
-  if(!slide) return 0;
-  const gap = parseFloat(getComputedStyle(mBanner3dTrack).gap) || 0;
-  return slide.getBoundingClientRect().width + gap;
+let gheroTimer = setInterval(() => goToGHero(gheroIndex + 1), 4800);
+function restartGHeroTimer(){
+  clearInterval(gheroTimer);
+  gheroTimer = setInterval(() => goToGHero(gheroIndex + 1), 4800);
 }
-function goM3d(step){
-  const max = mBanner3dTrack.scrollWidth - mBanner3dViewport.clientWidth;
-  let target = mBanner3dViewport.scrollLeft + step * m3dStep();
-  if(target < 0) target = max;               // wrap to the end
-  else if(target > max + 4) target = 0;       // wrap to the start
-  mBanner3dViewport.scrollTo({ left: target, behavior: 'smooth' });
-}
-let m3dTimer = setInterval(() => goM3d(1), 3800);
-function restartM3dTimer(){
-  clearInterval(m3dTimer);
-  m3dTimer = setInterval(() => goM3d(1), 3800);
-}
-document.getElementById('mBanner3dPrev').addEventListener('click', () => { goM3d(-1); restartM3dTimer(); });
-document.getElementById('mBanner3dNext').addEventListener('click', () => { goM3d(1); restartM3dTimer(); });
-mBanner3dViewport.addEventListener('pointerdown', restartM3dTimer);
 
 /* ===== PRODUCT VIEW MODAL ===== */
 const pmOverlay = document.getElementById('pmOverlay');
 const pmBox = document.getElementById('pmBox');
-const pmScrollBar = document.getElementById('pmScrollBar');
 const pmScrollClose = document.getElementById('pmScrollClose');
 const pmTop = document.getElementById('pmTop');
 const pmMedia = document.getElementById('pmMedia');
-const pmCat = document.getElementById('pmCat');
 const pmTitle = document.getElementById('pmTitle');
 const pmSku = document.getElementById('pmSku');
 const pmStock = document.getElementById('pmStock');
@@ -2507,7 +3019,7 @@ function renderSimilar(p){
       </div>
       <div class="pm-sim-body">
         <div class="pm-sim-name">${sp.name}</div>
-        <div class="pm-sim-price">${sp.price}</div>
+        <div class="pm-sim-price">${formatPriceHTML(sp.price)}</div>
       </div>
     `;
     card.addEventListener('click', () => loadProduct(sp, { animate: true }));
@@ -2516,10 +3028,9 @@ function renderSimilar(p){
 }
 
 function fillProductFields(p){
-  pmCat.textContent = p.cat;
   pmTitle.textContent = p.name;
   pmSku.textContent = `SKU ${p.sku}`;
-  pmPrice.textContent = p.price;
+  pmPrice.innerHTML = formatPriceHTML(p.price);
   pmUnit.textContent = p.unit;
 
   pmStock.textContent = p.stock === 'low' ? 'Low Stock' : 'In Stock';
@@ -2629,7 +3140,6 @@ function openProductModal(p){
   pmOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
   pmBox.scrollTop = 0;
-  pmScrollBar.classList.remove('visible');
 }
 
 function closeProductModal(){
@@ -2639,12 +3149,6 @@ function closeProductModal(){
 
 pmScrollClose.addEventListener('click', closeProductModal);
 pmOverlay.addEventListener('click', e => { if(e.target === pmOverlay) closeProductModal(); });
-
-/* Show the sticky "Close" bar once the visitor scrolls down past the
-   product image/details, so there's always a way to close the modal. */
-pmBox.addEventListener('scroll', () => {
-  pmScrollBar.classList.toggle('visible', pmBox.scrollTop > 80);
-});
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeProductModal(); });
 
 pmQtyMinus.addEventListener('click', () => {
@@ -3226,7 +3730,7 @@ function renderCartDrawer(){
               <span>${item.qty}</span>
               <button type="button" data-action="inc" aria-label="Increase quantity">+</button>
             </div>
-            <span class="cart-item-price">MVR ${lineTotal.toFixed(0)}</span>
+            <span class="cart-item-price">${formatPriceHTML(`MVR ${lineTotal.toFixed(0)}`)}</span>
           </div>
         </div>
         <button class="cart-item-remove" data-action="remove" aria-label="Remove item">
@@ -3235,7 +3739,7 @@ function renderCartDrawer(){
       </div>
     `;
   }).join('');
-  cartSubtotalEl.textContent = `MVR ${subtotal.toFixed(0)}`;
+  cartSubtotalEl.innerHTML = formatPriceHTML(`MVR ${subtotal.toFixed(0)}`);
 }
 
 document.getElementById('cartItems').addEventListener('click', e => {
