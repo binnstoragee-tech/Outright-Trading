@@ -1124,10 +1124,22 @@
     body{padding-bottom:90px;}
     .mobile-bottom-nav{
       display:flex;position:fixed;left:0;right:0;bottom:0;z-index:950;
-      background:rgba(255,255,255,.98);backdrop-filter:blur(14px);
       border-top:1px solid var(--line);
       padding:7px 4px calc(6px + env(safe-area-inset-bottom));
       box-shadow:0 -8px 24px -12px rgba(20,22,20,.15);
+      /* iOS Safari fix: keep this box on its own stable compositing layer
+         so it doesn't stretch/distort during elastic overscroll (rubber-band)
+         scrolling — a known Safari bug with fixed + backdrop-filter boxes. */
+      transform:translateZ(0);-webkit-transform:translateZ(0);
+      -webkit-backface-visibility:hidden;backface-visibility:hidden;
+      isolation:isolate;
+    }
+    /* the blur lives on a pseudo-element instead of directly on the fixed
+       box — this is what actually stops the Safari scroll-stretch glitch */
+    .mobile-bottom-nav::before{
+      content:"";position:absolute;inset:0;z-index:-1;
+      background:rgba(255,255,255,.98);
+      -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
     }
     .mbn-item{
       flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -1772,11 +1784,14 @@
     .mobile-bottom-nav{
       left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));
       border-radius:999px;
-      background:rgba(255,255,255,.65);
-      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
       border:1px solid rgba(255,255,255,.9);
       box-shadow:0 16px 36px -16px rgba(20,22,20,.28);
       padding:10px 6px calc(10px + env(safe-area-inset-bottom));
+    }
+    .mobile-bottom-nav::before{
+      border-radius:999px;
+      background:rgba(255,255,255,.65);
+      -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
     }
     .mbn-item{color:var(--grey);}
     .mbn-item.active{color:var(--green-deep);}

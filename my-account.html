@@ -1100,10 +1100,19 @@
     body{padding-bottom:76px;}
     .mobile-bottom-nav{
       display:flex;position:fixed;left:0;right:0;bottom:0;z-index:950;
-      background:rgba(255,255,255,.98);backdrop-filter:blur(14px);
       border-top:1px solid var(--line);
       padding:7px 4px calc(6px + env(safe-area-inset-bottom));
       box-shadow:0 -8px 24px -12px rgba(20,22,20,.15);
+      /* iOS Safari fix: own stable compositing layer so this doesn't
+         stretch/distort during elastic overscroll (rubber-band) scrolling. */
+      transform:translateZ(0);-webkit-transform:translateZ(0);
+      -webkit-backface-visibility:hidden;backface-visibility:hidden;
+      isolation:isolate;
+    }
+    .mobile-bottom-nav::before{
+      content:"";position:absolute;inset:0;z-index:-1;
+      background:rgba(255,255,255,.98);
+      -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
     }
     .mbn-item{
       flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
